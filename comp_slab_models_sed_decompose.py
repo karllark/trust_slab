@@ -8,7 +8,6 @@
 # 1 Jul 2015 - written
 #
 import os.path
-import string
 import argparse
 
 import numpy as np
@@ -55,7 +54,7 @@ def plot_decompose_sed(modnames, moddisplaynames, tau, angle, save_eps=False, sa
         cfile = cfile + angle + 'a000.sed'
         # if the '+' symbol was used (not requested, but...)
         if not os.path.isfile(cfile):
-            cfile = string.replace(cfile,'t1e','t1e+')
+            cfile = cfile.replace('t1e','t1e+')
 
         # read in the SED file for this model
         data = np.loadtxt(cfile)
