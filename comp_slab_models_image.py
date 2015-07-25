@@ -85,7 +85,7 @@ def plot_imagegrid(modnames, moddisplaynames, wave, tau, angle,
     plot_minmax = [np.median(minmax_vals[gindxs,0]),np.median(minmax_vals[gindxs,1])]
 
     for i in range(n_files):
-        cur_cax = ax[i].imshow(all_images[:,:,i],norm=LogNorm(vmin=plot_minmax[0],vmax=plot_minmax[1]))#,
+        cur_cax = ax[i].imshow(all_images[:,:,i],norm=LogNorm(vmin=plot_minmax[0],vmax=plot_minmax[1]), origin='lower')#,
 #                               cmap=pyplot.get_cmap('cubehelix'))
         ax[i].set_title(displaynames[i],fontsize=fontsize)
         ax[i].get_xaxis().set_visible(False)
