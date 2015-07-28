@@ -19,7 +19,7 @@ def plot_decompose_sed(modnames, moddisplaynames, tau, angle,
                        save_eps=False, save_png=False):
 
     # generate the filename
-    ifilenames = [modname + '/' + modname + '_slab_eff_t' + tau + '_i'+ angle + 'a000.sed'
+    ifilenames = [modname + '_t' + tau + '_i'+ angle + 'a000.sed'
                  for modname in modnames]
 
     # check all the files exisit, adjust if not
@@ -184,10 +184,14 @@ if __name__ == "__main__":
                         help="Viewing angle of model run")
     parser.add_argument("-m", "--max_plot_diff", metavar=float, default=10.0, 
                         help="maximum difference in percentage to plot")
-    parser.add_argument("-s", "--stau", action="store_true",
-                        help="subdivision tau for clumps (special DIRTY runs) [default=False]")
-    parser.add_argument("-n", "--nphot", action="store_true",
+    parser.add_argument("--econs", action="store_true",
+                        help="energy conservation convergence (special DIRTY runs) [default=False]")
+    parser.add_argument("--mscat", action="store_true",
+                        help="max scat convergence (special DIRTY runs) [default=False]")
+    parser.add_argument("--nphot", action="store_true",
                         help="nphot convergence (special DIRTY runs) [default=False]")
+    parser.add_argument("--stau", action="store_true",
+                        help="subdivision tau for clumps (special DIRTY runs) [default=False]")
     parser.add_argument("-e", "--eps", help="Save the plot as an encapsulated file",
                         action="store_true")
     parser.add_argument("-p", "--png", help="Save the plot as a portable network graphics file",
@@ -213,12 +217,30 @@ if __name__ == "__main__":
         #                   'DIRTY (stau=0.1)','DIRTY (stau=0.25)','DIRTY (stau=1.0)']
         modnames = ['dirty_stau_0.00250','dirty_stau_0.00500','dirty_stau_0.01000','dirty_stau_0.05000',
                     'dirty_stau_0.10000','dirty_stau_0.25000','dirty_stau_1.00000']
+        imodnames = ['dirty_stau/' + modname + '_slab_eff'
+                     for modname in modnames]
         scomp = 0
     elif args.nphot:
         moddisplaynames = ['DIRTY (N=3.2e7)','DIRTY (N=1e7)','DIRTY (N=3.2e6)','DIRTY (N=1e6)',
                            'DIRTY (N=3.2e5)']
         modnames = ['dirty_nphot_3.2e7','dirty_nphot_1e7','dirty_nphot_3.2e6','dirty_nphot_1e6',
                     'dirty_nphot_3.2e5']
+        imodnames = ['dirty_nphot/' + modname + '_slab_eff'
+                     for modname in modnames]
+        scomp = 0
+    elif args.mscat:
+        moddisplaynames = ['DIRTY (mscat=5)','DIRTY (mscat=1)']
+        modnames = ['dirty_mscat_5','dirty_mscat_1']
+        imodnames = ['dirty_mscat/' + modname + '_slab_eff'
+                     for modname in modnames]
+        scomp = 0
+    elif args.econs:
+        moddisplaynames = ['DIRTY (econs=0.001)','DIRTY (econs=0.0032)','DIRTY (econs=0.01)','DIRTY (econs=0.032)',
+                           'DIRTY (econs=0.1)','DIRTY (econs=0.32)','DIRTY (econs=1.0)']
+        modnames = ['dirty_econs_0.001','dirty_econs_0.0032','dirty_econs_0.01','dirty_econs_0.032',
+                    'dirty_econs_0.1','dirty_econs_0.32','dirty_econs_1.0']
+        imodnames = ['dirty_econs/' + modname + '_slab_eff'
+                     for modname in modnames]
         scomp = 0
     else:
         moddisplaynames = ['CRT','DART-ray','DIRTY','Hyperion','SKIRT','SOC','TRADING']
@@ -226,7 +248,11 @@ if __name__ == "__main__":
         modnames = ['crt','dartr','dirty','hyper','skirt','SOC','tradi']
         scomp = -1
 
+        imodnames = [modname + '/' + modname + '_slab_eff'
+                     for modname in modnames]
+
+        
     for angle in angles:
         for tau in taus:
-            plot_decompose_sed(modnames, moddisplaynames, tau, angle, save_eps=args.eps, save_png=args.png,
+            plot_decompose_sed(imodnames, moddisplaynames, tau, angle, save_eps=args.eps, save_png=args.png,
                                single_comp=scomp, max_plot_diff=mplot_diff)

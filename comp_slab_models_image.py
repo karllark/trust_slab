@@ -21,8 +21,8 @@ def plot_imagegrid(modnames, moddisplaynames, wave, tau, angle,
                    save_eps=False, save_png=False):
 
     # generate the filename
-    ifilenames = [modname + '/' + modname + '_slab_eff_t' + tau + '_i' + angle + 'a000_w' + wave + '.fits'
-                  for modname in modnames]
+    ifilenames = [modname + '_t' + tau + '_i' + angle + 'a000_w' + wave + '.fits'
+                 for modname in modnames]
     n_orig_files = len(ifilenames)
 
     # check all the files exisit, adjust if not
@@ -36,6 +36,11 @@ def plot_imagegrid(modnames, moddisplaynames, wave, tau, angle,
             fileindxs.append(i)
     n_files = len(filenames)
 
+    if n_files == 0:
+        print('no files present')
+        print(ifilenames)
+        exit(0)
+    
     # plot information
     fig_label = r'Slab, $\tau (1 \mu m)$ = '+tau+r', $\theta$ = ' + angle + ', $\lambda$ = ' + wave
     symtype = ['b-','g-','r-','c-','m-','y-','k-']
@@ -74,7 +79,7 @@ def plot_imagegrid(modnames, moddisplaynames, wave, tau, angle,
 
         # save the min/max values for determing the overall min/max plotting values
         gindxs = np.where((timage[:] > 0.) & (timage[:] < np.max(timage[:])))
-        if (len(gindxs[0]) > 0) & (displaynames[i] != 'SOC'):
+        if len(gindxs[0]) > 0:
             minmax_vals[i,0] = np.min(timage[gindxs])
             minmax_vals[i,1] = np.max(timage[gindxs])
         else:
@@ -128,10 +133,14 @@ if __name__ == "__main__":
                         help="Optical depth of model run")
     parser.add_argument("-a", "--angle", choices=good_angles, default='090',
                         help="Viewing angle of model run")
-    parser.add_argument("-s", "--stau", action="store_true",
-                        help="subdivision tau for clumps (special DIRTY runs) [default=False]")
-    parser.add_argument("-n", "--nphot", action="store_true",
+    parser.add_argument("--econs", action="store_true",
+                        help="energy conservation convergence (special DIRTY runs) [default=False]")
+    parser.add_argument("--mscat", action="store_true",
+                        help="max scat convergence (special DIRTY runs) [default=False]")
+    parser.add_argument("--nphot", action="store_true",
                         help="nphot convergence (special DIRTY runs) [default=False]")
+    parser.add_argument("--stau", action="store_true",
+                        help="subdivision tau for clumps (special DIRTY runs) [default=False]")
     parser.add_argument("-e", "--eps", help="Save the plot as an encapsulated file",
                         action="store_true")
     parser.add_argument("-p", "--png", help="Save the plot as a portable network graphics file",
@@ -159,12 +168,30 @@ if __name__ == "__main__":
         #                   'DIRTY (stau=0.1)','DIRTY (stau=0.25)','DIRTY (stau=1.0)']
         modnames = ['dirty_stau_0.00250','dirty_stau_0.00500','dirty_stau_0.01000','dirty_stau_0.05000',
                     'dirty_stau_0.10000','dirty_stau_0.25000','dirty_stau_1.00000']
+        imodnames = ['dirty_stau/' + modname + '_slab_eff'
+                     for modname in modnames]
         scomp = 0
     elif args.nphot:
         moddisplaynames = ['DIRTY (N=3.2e7)','DIRTY (N=1e7)','DIRTY (N=3.2e6)','DIRTY (N=1e6)',
                            'DIRTY (N=3.2e5)']
         modnames = ['dirty_nphot_3.2e7','dirty_nphot_1e7','dirty_nphot_3.2e6','dirty_nphot_1e6',
                     'dirty_nphot_3.2e5']
+        imodnames = ['dirty_nphot/' + modname + '_slab_eff'
+                     for modname in modnames]
+        scomp = 0
+    elif args.mscat:
+        moddisplaynames = ['DIRTY (mscat=5)','DIRTY (mscat=1)']
+        modnames = ['dirty_mscat_5','dirty_mscat_1']
+        imodnames = ['dirty_mscat/' + modname + '_slab_eff'
+                     for modname in modnames]
+        scomp = 0
+    elif args.econs:
+        moddisplaynames = ['DIRTY (econs=0.001)','DIRTY (econs=0.0032)','DIRTY (econs=0.01)','DIRTY (econs=0.032)',
+                           'DIRTY (econs=0.1)','DIRTY (econs=0.32)','DIRTY (econs=1.0)']
+        modnames = ['dirty_econs_0.001','dirty_econs_0.0032','dirty_econs_0.01','dirty_econs_0.032',
+                    'dirty_econs_0.1','dirty_econs_0.32','dirty_econs_1.0']
+        imodnames = ['dirty_econs/' + modname + '_slab_eff'
+                     for modname in modnames]
         scomp = 0
     else:
         moddisplaynames = ['CRT','DART-ray','DIRTY','Hyperion','SKIRT','SOC','TRADING']
@@ -172,8 +199,11 @@ if __name__ == "__main__":
         modnames = ['crt','dartr','dirty','hyper','skirt','SOC','tradi']
         scomp = -1
 
+        imodnames = [modname + '/' + modname + '_slab_eff'
+                     for modname in modnames]
+
     for angle in angles:
         for tau in taus:
             for wave in waves:
-                plot_imagegrid(modnames, moddisplaynames, wave, tau, angle,
+                plot_imagegrid(imodnames, moddisplaynames, wave, tau, angle,
                                save_eps=args.eps, save_png=args.png)
