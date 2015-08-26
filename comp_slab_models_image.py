@@ -17,7 +17,8 @@ from matplotlib.colors import LogNorm
 
 from astropy.io import fits
 
-def plot_imagegrid(modnames, moddisplaynames, wave, tau, angle, 
+def plot_imagegrid(modnames, moddisplaynames, wave, tau, angle,
+                   comp_index=-1, 
                    save_eps=False, save_png=False):
 
     # generate the filename
@@ -52,7 +53,12 @@ def plot_imagegrid(modnames, moddisplaynames, wave, tau, angle,
 
     # use gridspec to allow for one plot to be larger than the others
     # may do this later
-    gs = gridspec.GridSpec(3, 4, width_ratios=[1.,1.,1.0,0.15])
+    dm = divmod(n_files,3)
+    if dm[0] >= 3 & dm[1] > 0:
+        nrows = dm[0] + 1
+    else:
+        nrows = 3
+    gs = gridspec.GridSpec(nrows, 4, width_ratios=[1.,1.,1.0,0.15])
     ax = []
     for i in range(n_files):
         ax.append(pyplot.subplot(gs[divmod(fileindxs[i],3)]))
@@ -77,20 +83,43 @@ def plot_imagegrid(modnames, moddisplaynames, wave, tau, angle,
             minmax_vals = np.empty((n_files,2))
         all_images[:,:,i] = timage
 
-        # save the min/max values for determing the overall min/max plotting values
-        gindxs = np.where((timage[:] > 0.) & (timage[:] < np.max(timage[:])))
+    # get the image for comparison (if desired)
+    if comp_index > -2:
+        if comp_index >= 0:
+            ave_image_comp = np.array(all_images[:,:,comp_index])
+        else:
+            ave_image_comp = np.median(all_images,axis=2)
+        for i in range(n_files):
+            all_images[:,:,i] = all_images[:,:,i] - ave_image_comp
+
+            timage = all_images[:,:,i]
+            gindxs = np.where(ave_image_comp[:] > 0.)
+            timage[gindxs] /= ave_image_comp[gindxs]
+
+    # get the min/max to plot
+    for i in range(n_files):
+        timage = all_images[:,:,i]
+        if comp_index > -2:
+            gindxs = np.where(np.isfinite(timage[:]))
+        else:
+            gindxs = np.where((timage[:] > 0.) & (timage[:] < np.max(timage[:])))
         if len(gindxs[0]) > 0:
             minmax_vals[i,0] = np.min(timage[gindxs])
             minmax_vals[i,1] = np.max(timage[gindxs])
         else:
             print(i,cfile,' has no positive values')
 
-    # get the min/max to plot
-    gindxs, = np.where(minmax_vals[:,0] > 0)
-    plot_minmax = [np.median(minmax_vals[gindxs,0]),np.median(minmax_vals[gindxs,1])]
-
+    if comp_index > -2:
+        plot_minmax = [-0.1,0.1]
+    else:
+        gindxs, = np.where(minmax_vals[:,0] > 0)
+        plot_minmax = [np.median(minmax_vals[gindxs,0]),np.median(minmax_vals[gindxs,1])]
+    
     for i in range(n_files):
-        cur_cax = ax[i].imshow(all_images[:,:,i],norm=LogNorm(vmin=plot_minmax[0],vmax=plot_minmax[1]), origin='lower')#,
+        if comp_index > -2:
+            cur_cax = ax[i].imshow(all_images[:,:,i],vmin=plot_minmax[0],vmax=plot_minmax[1], origin='lower')#,
+        else:
+            cur_cax = ax[i].imshow(all_images[:,:,i],norm=LogNorm(vmin=plot_minmax[0],vmax=plot_minmax[1]), origin='lower')#,
 #                               cmap=pyplot.get_cmap('cubehelix'))
         ax[i].set_title(displaynames[i],fontsize=fontsize)
         ax[i].get_xaxis().set_visible(False)
@@ -101,7 +130,7 @@ def plot_imagegrid(modnames, moddisplaynames, wave, tau, angle,
               verticalalignment='top',fontsize=1.5*fontsize)
 
     # colorbar
-    fig.colorbar(cur_cax, cax=(pyplot.subplot(gs[0:3,3])))
+    fig.colorbar(cur_cax, cax=(pyplot.subplot(gs[0:nrows,3])))
     
     # optimize the figure layout
     gs.tight_layout(fig, rect=[0, 0.03, 1, 0.96])
@@ -141,6 +170,8 @@ if __name__ == "__main__":
                         help="nphot convergence (special DIRTY runs) [default=False]")
     parser.add_argument("--stau", action="store_true",
                         help="subdivision tau for clumps (special DIRTY runs) [default=False]")
+    parser.add_argument("--nbinz", action="store_true",
+                        help="number of z bins in slab (special DIRTY runs) [default=False]")
     parser.add_argument("--nz", action="store_true",
                         help="number of grid cells in the z direction (special SKIRT runs) [default=False]")
     parser.add_argument("--wr", action="store_true",
@@ -168,50 +199,52 @@ if __name__ == "__main__":
     if args.stau:
         moddisplaynames = ['DIRTY (Nz=400)','DIRTY (Nz=200)','DIRTY (Nz=100)','DIRTY (Nz=50)',
                            'DIRTY (Nz=10)','DIRTY (Nz=6)','DIRTY (Nz=3)']
-        #moddisplaynames = ['DIRTY (stau=0.0025)','DIRTY (stau=0.005)','DIRTY (stau=0.01)','DIRTY (stau=0.05)',
-        #                   'DIRTY (stau=0.1)','DIRTY (stau=0.25)','DIRTY (stau=1.0)']
         modnames = ['dirty_stau_0.00250','dirty_stau_0.00500','dirty_stau_0.01000','dirty_stau_0.05000',
                     'dirty_stau_0.10000','dirty_stau_0.25000','dirty_stau_1.00000']
         imodnames = ['dirty_stau/' + modname + '_slab_eff' for modname in modnames]
-        scomp = 0
+        scomp = -2
+    elif args.nbinz:
+        nbinzs = ['10','20','50','100','200','500']
+        moddisplaynames = ['DIRTY (Nz='+nbinz+')' for nbinz in reversed(nbinzs)]
+        modnames = ['dirty_nbinz_'+nbinz for nbinz in reversed(nbinzs)]
+        imodnames = ['dirty_nbinz/' + modname + '_slab_eff' for modname in modnames]
+        scomp = -2
     elif args.nphot:
-        moddisplaynames = ['DIRTY (N=3.2e7)','DIRTY (N=1e7)','DIRTY (N=3.2e6)','DIRTY (N=1e6)','DIRTY (N=3.2e5)']
-        modnames = ['dirty_nphot_3.2e7','dirty_nphot_1e7','dirty_nphot_3.2e6','dirty_nphot_1e6','dirty_nphot_3.2e5']
+        nphots = ['3.2e5','1e6','3.2e6','1e7','3.2e7','1e8']
+        moddisplaynames = ['DIRTY (N='+nphot+')' for nphot in reversed(nphots)]
+        modnames = ['dirty_nphot_'+nphot for nphot in reversed(nphots)]
         imodnames = ['dirty_nphot/' + modname + '_slab_eff' for modname in modnames]
-        scomp = 0
+        scomp = -2
     elif args.mscat:
-        moddisplaynames = ['DIRTY (mscat=5)','DIRTY (mscat=1)']
-        modnames = ['dirty_mscat_5','dirty_mscat_1']
+        mscats = ['1','5','10','20','50','75','100','150','200','300']
+        moddisplaynames = ['DIRTY (mscat=' + mscat + ')' for mscat in reversed(mscats)]
+        modnames = ['dirty_mscat_' + mscat for mscat in reversed(mscats)]
         imodnames = ['dirty_mscat/' + modname + '_slab_eff' for modname in modnames]
-        scomp = 0
+        scomp = -2
     elif args.econs:
-        moddisplaynames = ['DIRTY (econs=0.001)','DIRTY (econs=0.0032)','DIRTY (econs=0.01)','DIRTY (econs=0.032)',
-                           'DIRTY (econs=0.1)','DIRTY (econs=0.32)','DIRTY (econs=1.0)']
-        modnames = ['dirty_econs_0.001','dirty_econs_0.0032','dirty_econs_0.01','dirty_econs_0.032',
-                    'dirty_econs_0.1','dirty_econs_0.32','dirty_econs_1.0']
+        econtargs = ['1.0','0.32','0.1','0.032','0.01','0.0032','0.001']
+        moddisplaynames = ['DIRTY (econs='+econtarg+')' for econtarg in reversed(econtargs)]
+        modnames = ['dirty_econs_'+econtarg for econtarg in reversed(econtargs)]
         imodnames = ['dirty_econs/' + modname + '_slab_eff' for modname in modnames]
-        scomp = 0
+        scomp = -2
     elif args.nz:
         moddisplaynames = ['SKIRT (Nz=400)','SKIRT (Nz=200)','SKIRT (Nz=100)','SKIRT (Nz=30)','SKIRT (Nz=10)','SKIRT (Nz=5)']
         modnames = ['skirtnz400','skirtnz200','skirtnz100','skirtnz030','skirtnz010','skirtnz005']
         imodnames = ['skirtnz/' + modname + '_slab_eff' for modname in modnames]
-        scomp = 0
+        scomp = -2
     elif args.wr:
         moddisplaynames = ['SKIRT (wr=1e8)','SKIRT (wr=1e7)','SKIRT (wr=1e6)','SKIRT (wr=1e5)','SKIRT (wr=1e4)','SKIRT (wr=1e3)']
         modnames = ['skirtwr1e8','skirtwr1e7','skirtwr1e6','skirtwr1e5','skirtwr1e4','skirtwr1e3']
         imodnames = ['skirtwr/' + modname + '_slab_eff' for modname in modnames]
-        scomp = 0
+        scomp = -2
     else:
         moddisplaynames = ['CRT','DART-ray','DIRTY','Hyperion','SKIRT','SOC','TRADING']
-        #modnames = ['crt','dirty_stau_0.00250','hyper','skirt','SOC','tradi']
         modnames = ['crt','dartr','dirty','hyper','skirt','SOC','tradi']
-        scomp = -1
-
-        imodnames = [modname + '/' + modname + '_slab_eff'
-                     for modname in modnames]
+        imodnames = [modname + '/' + modname + '_slab_eff' for modname in modnames]
+        scomp = -2
 
     for angle in angles:
         for tau in taus:
             for wave in waves:
                 plot_imagegrid(imodnames, moddisplaynames, wave, tau, angle,
-                               save_eps=args.eps, save_png=args.png)
+                               save_eps=args.eps, save_png=args.png, comp_index=scomp)

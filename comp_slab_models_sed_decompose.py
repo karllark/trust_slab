@@ -37,7 +37,7 @@ def plot_decompose_sed(modnames, moddisplaynames, tau, angle,
 
     # plot information
     fig_label = r'Slab, $\tau (1 \mu m)$ = '+tau+r', $\theta$ = ' + angle
-    symtype = ['b-','g-','r-','c-','m-','y-','k-']
+    symtype = ['b-','g-','r-','c-','m-','y-','k-','b--','g--','r--']
     total_symtype = ['k-','b--','b:','r--','r:','b--']
     fontsize = 12
 
@@ -150,7 +150,7 @@ def plot_decompose_sed(modnames, moddisplaynames, tau, angle,
 
     # enable the two needed legends
     ax[0].legend(loc=3,fontsize=fontsize)
-    ax[4].legend(loc=3,fontsize=fontsize)
+    ax[4].legend(loc=0,fontsize=fontsize)
 
     # optimize the figure layout
     pyplot.tight_layout()
@@ -191,7 +191,9 @@ if __name__ == "__main__":
     parser.add_argument("--nphot", action="store_true",
                         help="nphot convergence (special DIRTY runs) [default=False]")
     parser.add_argument("--stau", action="store_true",
-                        help="subdivision tau for clumps (special DIRTY runs) [default=False]")
+                        help="subdivision tau for slab clumps (special DIRTY runs) [default=False]")
+    parser.add_argument("--nbinz", action="store_true",
+                        help="number of z bins in slab (special DIRTY runs) [default=False]")
     parser.add_argument("--nz", action="store_true",
                         help="number of grid cells in the z direction (special SKIRT runs) [default=False]")
     parser.add_argument("--wr", action="store_true",
@@ -217,34 +219,33 @@ if __name__ == "__main__":
     if args.stau:
         moddisplaynames = ['DIRTY (Nz=400)','DIRTY (Nz=200)','DIRTY (Nz=100)','DIRTY (Nz=50)',
                            'DIRTY (Nz=10)','DIRTY (Nz=6)','DIRTY (Nz=3)']
-        #moddisplaynames = ['DIRTY (stau=0.0025)','DIRTY (stau=0.005)','DIRTY (stau=0.01)','DIRTY (stau=0.05)',
-        #                   'DIRTY (stau=0.1)','DIRTY (stau=0.25)','DIRTY (stau=1.0)']
         modnames = ['dirty_stau_0.00250','dirty_stau_0.00500','dirty_stau_0.01000','dirty_stau_0.05000',
                     'dirty_stau_0.10000','dirty_stau_0.25000','dirty_stau_1.00000']
-        imodnames = ['dirty_stau/' + modname + '_slab_eff'
-                     for modname in modnames]
+        imodnames = ['dirty_stau/' + modname + '_slab_eff' for modname in modnames]
+        scomp = 0
+    elif args.nbinz:
+        nbinzs = ['10','20','50','100','200','500']
+        moddisplaynames = ['DIRTY (Nz='+nbinz+')' for nbinz in reversed(nbinzs)]
+        modnames = ['dirty_nbinz_'+nbinz for nbinz in reversed(nbinzs)]
+        imodnames = ['dirty_nbinz/' + modname + '_slab_eff' for modname in modnames]
         scomp = 0
     elif args.nphot:
-        moddisplaynames = ['DIRTY (N=3.2e7)','DIRTY (N=1e7)','DIRTY (N=3.2e6)','DIRTY (N=1e6)',
-                           'DIRTY (N=3.2e5)']
-        modnames = ['dirty_nphot_3.2e7','dirty_nphot_1e7','dirty_nphot_3.2e6','dirty_nphot_1e6',
-                    'dirty_nphot_3.2e5']
-        imodnames = ['dirty_nphot/' + modname + '_slab_eff'
-                     for modname in modnames]
+        nphots = ['3.2e5','1e6','3.2e6','1e7','3.2e7','1e8']
+        moddisplaynames = ['DIRTY (N='+nphot+')' for nphot in reversed(nphots)]
+        modnames = ['dirty_nphot_'+nphot for nphot in reversed(nphots)]
+        imodnames = ['dirty_nphot/' + modname + '_slab_eff' for modname in modnames]
         scomp = 0
     elif args.mscat:
-        moddisplaynames = ['DIRTY (mscat=5)','DIRTY (mscat=1)']
-        modnames = ['dirty_mscat_5','dirty_mscat_1']
-        imodnames = ['dirty_mscat/' + modname + '_slab_eff'
-                     for modname in modnames]
+        mscats = ['1','5','10','20','50','75','100','150','200','300']
+        moddisplaynames = ['DIRTY (mscat=' + mscat + ')' for mscat in reversed(mscats)]
+        modnames = ['dirty_mscat_' + mscat for mscat in reversed(mscats)]
+        imodnames = ['dirty_mscat/' + modname + '_slab_eff' for modname in modnames]
         scomp = 0
     elif args.econs:
-        moddisplaynames = ['DIRTY (econs=0.001)','DIRTY (econs=0.0032)','DIRTY (econs=0.01)','DIRTY (econs=0.032)',
-                           'DIRTY (econs=0.1)','DIRTY (econs=0.32)','DIRTY (econs=1.0)']
-        modnames = ['dirty_econs_0.001','dirty_econs_0.0032','dirty_econs_0.01','dirty_econs_0.032',
-                    'dirty_econs_0.1','dirty_econs_0.32','dirty_econs_1.0']
-        imodnames = ['dirty_econs/' + modname + '_slab_eff'
-                     for modname in modnames]
+        econtargs = ['1.0','0.32','0.1','0.032','0.01','0.0032','0.001']
+        moddisplaynames = ['DIRTY (econs='+econtarg+')' for econtarg in reversed(econtargs)]
+        modnames = ['dirty_econs_'+econtarg for econtarg in reversed(econtargs)]
+        imodnames = ['dirty_econs/' + modname + '_slab_eff' for modname in modnames]
         scomp = 0
     elif args.nz:
         moddisplaynames = ['SKIRT (Nz=400)','SKIRT (Nz=200)','SKIRT (Nz=100)','SKIRT (Nz=30)','SKIRT (Nz=10)','SKIRT (Nz=5)']
@@ -258,13 +259,9 @@ if __name__ == "__main__":
         scomp = 0
     else:
         moddisplaynames = ['CRT','DART-ray','DIRTY','Hyperion','SKIRT','SOC','TRADING']
-        #modnames = ['crt','dirty_stau_0.00250','hyper','skirt','SOC','tradi']
         modnames = ['crt','dartr','dirty','hyper','skirt','SOC','tradi']
+        imodnames = [modname + '/' + modname + '_slab_eff' for modname in modnames]
         scomp = -1
-
-        imodnames = [modname + '/' + modname + '_slab_eff'
-                     for modname in modnames]
-
         
     for angle in angles:
         for tau in taus:
