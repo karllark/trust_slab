@@ -192,6 +192,10 @@ if __name__ == "__main__":
                         help="nphot convergence (special DIRTY runs) [default=False]")
     parser.add_argument("--stau", action="store_true",
                         help="subdivision tau for clumps (special DIRTY runs) [default=False]")
+    parser.add_argument("--nz", action="store_true",
+                        help="number of grid cells in the z direction (special SKIRT runs) [default=False]")
+    parser.add_argument("--wr", action="store_true",
+                        help="minimum weight reduction (special SKIRT runs) [default=False]")
     parser.add_argument("-e", "--eps", help="Save the plot as an encapsulated file",
                         action="store_true")
     parser.add_argument("-p", "--png", help="Save the plot as a portable network graphics file",
@@ -241,6 +245,16 @@ if __name__ == "__main__":
                     'dirty_econs_0.1','dirty_econs_0.32','dirty_econs_1.0']
         imodnames = ['dirty_econs/' + modname + '_slab_eff'
                      for modname in modnames]
+        scomp = 0
+    elif args.nz:
+        moddisplaynames = ['SKIRT (Nz=400)','SKIRT (Nz=200)','SKIRT (Nz=100)','SKIRT (Nz=30)','SKIRT (Nz=10)','SKIRT (Nz=5)']
+        modnames = ['skirtnz400','skirtnz200','skirtnz100','skirtnz030','skirtnz010','skirtnz005']
+        imodnames = ['skirtnz/' + modname + '_slab_eff' for modname in modnames]
+        scomp = 0
+    elif args.wr:
+        moddisplaynames = ['SKIRT (wr=1e8)','SKIRT (wr=1e7)','SKIRT (wr=1e6)','SKIRT (wr=1e5)','SKIRT (wr=1e4)','SKIRT (wr=1e3)']
+        modnames = ['skirtwr1e8','skirtwr1e7','skirtwr1e6','skirtwr1e5','skirtwr1e4','skirtwr1e3']
+        imodnames = ['skirtwr/' + modname + '_slab_eff' for modname in modnames]
         scomp = 0
     else:
         moddisplaynames = ['CRT','DART-ray','DIRTY','Hyperion','SKIRT','SOC','TRADING']
