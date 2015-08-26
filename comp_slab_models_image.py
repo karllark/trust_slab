@@ -18,7 +18,7 @@ from matplotlib.colors import LogNorm
 from astropy.io import fits
 
 def plot_imagegrid(modnames, moddisplaynames, wave, tau, angle,
-                   comp_index=-1, max_plot_diff=100.0,
+                   comp_index=-2, max_plot_diff=100.0,
                    save_eps=False, save_png=False):
 
     # generate the filename
@@ -109,31 +109,31 @@ def plot_imagegrid(modnames, moddisplaynames, wave, tau, angle,
     if comp_index > -2:
         if comp_index >= 0:
             ave_image_comp = np.array(all_images[:,:,comp_index])
-        for i in range(n_files):
-            all_images[:,:,i] = all_images[:,:,i] - ave_image_comp
+        #for i in range(n_files):
+        #    all_images[:,:,i] = all_images[:,:,i] - ave_image_comp
 
-            timage = all_images[:,:,i]
-            gindxs = np.where(ave_image_comp[:] > 0.)
-            timage[gindxs] /= ave_image_comp[gindxs]
+        #    timage = all_images[:,:,i]
+        #    gindxs = np.where(ave_image_comp[:] > 0.)
+        #    timage[gindxs] /= ave_image_comp[gindxs]
 
     # get the min/max to plot
     for i in range(n_files):
         timage = all_images[:,:,i]
-        if comp_index > -2:
-            gindxs = np.where(np.isfinite(timage[:]))
-        else:
-            gindxs = np.where((timage[:] > 0.) & (timage[:] < np.max(timage[:])))
+        #if comp_index > -2:
+        #    gindxs = np.where(np.isfinite(timage[:]))
+        #else:
+        gindxs = np.where((timage[:] > 0.) & (timage[:] < np.max(timage[:])))
         if len(gindxs[0]) > 0:
             minmax_vals[i,0] = np.min(timage[gindxs])
             minmax_vals[i,1] = np.max(timage[gindxs])
         else:
             print(i,cfile,' has no positive values')
 
-    if comp_index > -2:
-        plot_minmax = [-0.1,0.1]
-    else:
-        gindxs, = np.where(minmax_vals[:,0] > 0)
-        plot_minmax = [np.median(minmax_vals[gindxs,0]),np.median(minmax_vals[gindxs,1])]
+    #if comp_index > -2:
+    #    plot_minmax = [-0.1,0.1]
+    #else:
+    gindxs, = np.where(minmax_vals[:,0] > 0)
+    plot_minmax = [np.median(minmax_vals[gindxs,0]),np.median(minmax_vals[gindxs,1])]
 
     # cut plot variables
     cut1_minmax_x_vals = np.array([1e6,-1e6])
@@ -150,10 +150,10 @@ def plot_imagegrid(modnames, moddisplaynames, wave, tau, angle,
     # now display everything    
     for i in range(n_files):
         # display images
-        if comp_index > -2:
-            cur_cax = ax[i].imshow(all_images[:,:,i],vmin=plot_minmax[0],vmax=plot_minmax[1], origin='lower')#,
-        else:
-            cur_cax = ax[i].imshow(all_images[:,:,i],norm=LogNorm(vmin=plot_minmax[0],vmax=plot_minmax[1]), origin='lower')#,
+        #if comp_index > -2:
+        #    cur_cax = ax[i].imshow(all_images[:,:,i],vmin=plot_minmax[0],vmax=plot_minmax[1], origin='lower')#,
+        #else:
+        cur_cax = ax[i].imshow(all_images[:,:,i],norm=LogNorm(vmin=plot_minmax[0],vmax=plot_minmax[1]), origin='lower')#,
 #                               cmap=pyplot.get_cmap('cubehelix'))
         ax[i].set_title(displaynames[i],fontsize=fontsize)
         ax[i].get_xaxis().set_visible(False)

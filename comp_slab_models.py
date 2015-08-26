@@ -126,6 +126,7 @@ if __name__ == "__main__":
             if args.image:
                 for wave in waves:
                     plot_imagegrid(imodnames, moddisplaynames, wave, tau, angle,
+                                   max_plot_diff=mplot_diff, comp_index=scomp,
                                    save_eps=args.eps, save_png=args.png)
             else:
                 plot_decompose_sed(imodnames, moddisplaynames, tau, angle, save_eps=args.eps, save_png=args.png,
