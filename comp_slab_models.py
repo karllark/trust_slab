@@ -85,41 +85,49 @@ if __name__ == "__main__":
         modnames = ['dirty_nbinz_'+nbinz for nbinz in reversed(nbinzs)]
         imodnames = ['dirty_nbinz/' + modname + '_slab_eff' for modname in modnames]
         scomp = 0
+        save_str = 'dirty_nz'
     elif args.skirt_nz:
         nbinzs = ['005','010','030','100','200','400']
         moddisplaynames = ['SK (Nz='+nbinz+')' for nbinz in reversed(nbinzs)]
         modnames = ['skirtnz'+nbinz for nbinz in reversed(nbinzs)]
         imodnames = ['skirt_nbinz/' + modname + '_slab_eff' for modname in modnames]
         scomp = 0
+        save_str = 'skirt_nz'
     elif args.dirty_nphot:
-        nphots = ['3.2e5','1e6','3.2e6','1e7','3.2e7','1e8']
+        #nphots = ['3.2e5','1e6','3.2e6','1e7','3.2e7','1e8']
+        nphots = ['3.2e5','1e6','3.2e6','1e7','3.2e7']
         moddisplaynames = ['DI (N='+nphot+')' for nphot in reversed(nphots)]
         modnames = ['dirty_nphot_'+nphot for nphot in reversed(nphots)]
         imodnames = ['dirty_nphot/' + modname + '_slab_eff' for modname in modnames]
         scomp = 0
+        save_str = 'dirty_nphot' 
     elif args.dirty_mscat:
         mscats = ['1','5','10','20','50','75','100','150','200','300']
         moddisplaynames = ['DI (mscat=' + mscat + ')' for mscat in reversed(mscats)]
         modnames = ['dirty_mscat_' + mscat for mscat in reversed(mscats)]
         imodnames = ['dirty_mscat/' + modname + '_slab_eff' for modname in modnames]
         scomp = 0
+        save_str = 'dirty_mscat'
     elif args.skirt_wr:
         weightred = ['1e8','1e7','1e6','1e5','1e4','1e3']
         moddisplaynames = ['SK (wr='+wr+')' for wr in weightred]
         modnames = ['skirtwr'+wr for wr in weightred]
         imodnames = ['skirt_wr/' + modname + '_slab_eff' for modname in modnames]
         scomp = 0
+        save_str = 'skirt_wr'
     elif args.dirty_econs:
         econtargs = ['1.0','0.32','0.1','0.032','0.01','0.0032','0.001']
         moddisplaynames = ['DI (econs='+econtarg+')' for econtarg in reversed(econtargs)]
         modnames = ['dirty_econs_'+econtarg for econtarg in reversed(econtargs)]
         imodnames = ['dirty_econs/' + modname + '_slab_eff' for modname in modnames]
         scomp = 0
+        save_str = 'dirty_econs'
     else:
         moddisplaynames = ['CRT','DART-ray','DIRTY','Hyperion','SKIRT','SOC','TRADING']
         modnames = ['crt','dartr','dirty','hyper','skirt','SOC','tradi']
         imodnames = [modname + '/' + modname + '_slab_eff' for modname in modnames]
         scomp = -1
+        save_str = ''
 
     for angle in angles:
         for tau in taus:
@@ -127,7 +135,9 @@ if __name__ == "__main__":
                 for wave in waves:
                     plot_imagegrid(imodnames, moddisplaynames, wave, tau, angle,
                                    max_plot_diff=mplot_diff, comp_index=scomp,
-                                   save_eps=args.eps, save_png=args.png)
+                                   save_str=save_str, save_eps=args.eps, save_png=args.png)
             else:
-                plot_decompose_sed(imodnames, moddisplaynames, tau, angle, save_eps=args.eps, save_png=args.png,
-                                   single_comp=scomp, max_plot_diff=mplot_diff)
+                plot_decompose_sed(imodnames, moddisplaynames, tau, angle,
+                                   single_comp=scomp, max_plot_diff=mplot_diff,
+                                   save_str=save_str, save_eps=args.eps, save_png=args.png)
+                                   

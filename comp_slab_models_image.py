@@ -18,7 +18,7 @@ from matplotlib.colors import LogNorm
 from astropy.io import fits
 
 def plot_imagegrid(modnames, moddisplaynames, wave, tau, angle,
-                   comp_index=-2, max_plot_diff=100.0,
+                   comp_index=-2, max_plot_diff=100.0, save_str='',
                    save_eps=False, save_png=False):
 
     # generate the filename
@@ -168,11 +168,19 @@ def plot_imagegrid(modnames, moddisplaynames, wave, tau, angle,
             cut1_minmax_x_vals[1] = np.max([cut1_minmax_x_vals[1],np.max(cut1_plot_x[gindxs2])])
             cut1_minmax_y_vals[0] = np.min([cut1_minmax_y_vals[0],np.min(cut1_plot_y[gindxs2])])
             cut1_minmax_y_vals[1] = np.max([cut1_minmax_y_vals[1],np.max(cut1_plot_y[gindxs2])])
-            ax[n_files].plot(cut1_plot_x[gindxs],cut1_plot_y[gindxs],symtype[fileindxs[i]],label=displaynames[i])
+            if i < 6:
+                tname = displaynames[i]
+            else:
+                tname = None
+            ax[n_files].plot(cut1_plot_x[gindxs],cut1_plot_y[gindxs],symtype[fileindxs[i]],label=tname)
 
             # percent difference plot for first cut
             gindxs, = np.where((cut1_plot_y > 0) & (cut1_plot_y_all > 0))
-            ax[n_files+1].plot(cut1_plot_x[gindxs],100.*(cut1_plot_y[gindxs]-cut1_plot_y_all[gindxs])/cut1_plot_y_all[gindxs],symtype[fileindxs[i]],label=displaynames[i])
+            if i >= 6:
+                tname = displaynames[i]
+            else:
+                tname = None
+            ax[n_files+1].plot(cut1_plot_x[gindxs],100.*(cut1_plot_y[gindxs]-cut1_plot_y_all[gindxs])/cut1_plot_y_all[gindxs],symtype[fileindxs[i]],label=tname)
             
         # second cut (x)
         cut2_plot_y = np.median(all_images[cut2[0]:cut2[1],:,i],axis=0)
@@ -183,11 +191,19 @@ def plot_imagegrid(modnames, moddisplaynames, wave, tau, angle,
             cut2_minmax_x_vals[1] = np.max([cut2_minmax_x_vals[1],np.max(cut2_plot_x[gindxs2])])
             cut2_minmax_y_vals[0] = np.min([cut2_minmax_y_vals[0],np.min(cut2_plot_y[gindxs2])])
             cut2_minmax_y_vals[1] = np.max([cut2_minmax_y_vals[1],np.max(cut2_plot_y[gindxs2])])
-            ax[n_files+2].plot(cut2_plot_x[gindxs],cut2_plot_y[gindxs],symtype[fileindxs[i]],label=displaynames[i])
+            if i < 6:
+                tname = displaynames[i]
+            else:
+                tname = None
+            ax[n_files+2].plot(cut2_plot_x[gindxs],cut2_plot_y[gindxs],symtype[fileindxs[i]],label=tname)
         
             # percent difference plot for first cut
             gindxs, = np.where((cut2_plot_y > 0) & (cut2_plot_y_all > 0))
-            ax[n_files+3].plot(cut2_plot_x[gindxs],100.*(cut2_plot_y[gindxs]-cut2_plot_y_all[gindxs])/cut2_plot_y_all[gindxs],symtype[fileindxs[i]],label=displaynames[i])
+            if i >= 6:
+                tname = displaynames[i]
+            else:
+                tname = None
+            ax[n_files+3].plot(cut2_plot_x[gindxs],100.*(cut2_plot_y[gindxs]-cut2_plot_y_all[gindxs])/cut2_plot_y_all[gindxs],symtype[fileindxs[i]],label=tname)
 
     # setup for the first cut plot
     ax[n_files].set_yscale('log')
@@ -198,14 +214,16 @@ def plot_imagegrid(modnames, moddisplaynames, wave, tau, angle,
     cut1_minmax_y_vals[1] = 10**(np.log10(cut1_minmax_y_vals[1]) + (0.1*(np.log10(cut1_minmax_y_vals[1]) - np.log10(cut1_minmax_y_vals[0]))))
     ax[n_files].set_ylim(cut1_minmax_y_vals)
     ax[n_files].set_ylabel('SB [MJy/sr]')
-    ax[n_files].legend(loc=1,fontsize=fontsize)
     ax[n_files].set_title('Y slice ($'+str(cut1[0])+' \leq x \leq '+str(cut1[1])+ '$)')
+    ax[n_files].legend(loc=1,fontsize=fontsize)
 
     ax[n_files+1].set_ylabel('% difference')
     ax[n_files+1].set_xlim(cut1_minmax_x_vals)
     cur_ylim = ax[n_files+1].get_ylim()
     new_ylim = [max([cur_ylim[0],-1.0*max_plot_diff]),min([cur_ylim[1],max_plot_diff])]
     ax[n_files+1].set_ylim(new_ylim)
+    if n_files > 6:
+        ax[n_files+1].legend(loc=1,fontsize=fontsize)
 
     # setup for the second cut plot
     ax[n_files+2].set_yscale('log')
@@ -216,14 +234,16 @@ def plot_imagegrid(modnames, moddisplaynames, wave, tau, angle,
     cut2_minmax_y_vals[1] = 10**(np.log10(cut2_minmax_y_vals[1]) + (0.1*(np.log10(cut2_minmax_y_vals[1]) - np.log10(cut2_minmax_y_vals[0]))))
     ax[n_files+2].set_ylim(cut2_minmax_y_vals)
     ax[n_files+2].set_ylabel('SB [MJy/sr]')
-    ax[n_files+2].legend(loc=1,fontsize=fontsize)
     ax[n_files+2].set_title('X slice ($'+str(cut2[0])+' \leq y \leq '+str(cut2[1])+ '$)')
+    ax[n_files+2].legend(loc=1,fontsize=fontsize)
 
     ax[n_files+3].set_ylabel('% difference')
     ax[n_files+3].set_xlim(cut2_minmax_x_vals)
     cur_ylim = ax[n_files+1].get_ylim()
     new_ylim = [max([cur_ylim[0],-1.0*max_plot_diff]),min([cur_ylim[1],max_plot_diff])]
     ax[n_files+3].set_ylim(new_ylim)
+    if n_files > 6:
+        ax[n_files+3].legend(loc=1,fontsize=fontsize)
 
     # add the overall label
     fig.text (0.5, 0.99, fig_label, horizontalalignment='center',
@@ -237,6 +257,9 @@ def plot_imagegrid(modnames, moddisplaynames, wave, tau, angle,
 
     # display the plot
     save_name =  'slab_t' + tau + '_i' + angle + '_w' + wave + '_image_comp'
+
+    if save_str != '':
+        save_name += '_' + save_str
     
     if save_png:
         fig.savefig(save_name+'.png')

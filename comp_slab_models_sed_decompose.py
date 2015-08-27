@@ -15,7 +15,7 @@ import matplotlib.pyplot as pyplot
 import matplotlib.gridspec as gridspec
 
 def plot_decompose_sed(modnames, moddisplaynames, tau, angle,
-                       single_comp=-1, max_plot_diff=10.0,
+                       single_comp=-1, max_plot_diff=10.0, save_str='',
                        save_eps=False, save_png=False):
 
     # generate the filename
@@ -85,7 +85,7 @@ def plot_decompose_sed(modnames, moddisplaynames, tau, angle,
     for k in range(n_comps):
         for j in range(n_waves):
             gindxs, = np.where(all_data[j,comp_indxs[k],:] > 0)
-            if len(gindxs) > 0:
+            if len(gindxs) > 2:
                 ave_sed_comps[j,k] = np.median(all_data[j,comp_indxs[k],gindxs])
                 #print(all_data[j,k,gindxs])
                 #print(ave_sed_comps[j,k])
@@ -109,8 +109,10 @@ def plot_decompose_sed(modnames, moddisplaynames, tau, angle,
             gindxs, = np.where((all_data[:,comp_indxs[k],i] > 0.0) & (ave_sed_comps[:,k] > 0.0))
             if len(gindxs) > 0:
                 y = 100.*(all_data[gindxs,comp_indxs[k],i] - ave_sed_comps[gindxs,k])/ave_sed_comps[gindxs,k]
-                if comp_indxs[k] == 4:
+                if (comp_indxs[k] == 4) & (i < 6):
                     # needed for to have a good legend
+                    ax[k+1].plot(all_data[gindxs,0,i], y, symtype[fileindxs[i]],label=displaynames[i])
+                if (comp_indxs[k] == 5) & (i >= 6):
                     ax[k+1].plot(all_data[gindxs,0,i], y, symtype[fileindxs[i]],label=displaynames[i])
                 else:
                     ax[k+1].plot(all_data[gindxs,0,i], y, symtype[fileindxs[i]])
@@ -151,6 +153,8 @@ def plot_decompose_sed(modnames, moddisplaynames, tau, angle,
     # enable the two needed legends
     ax[0].legend(loc=3,fontsize=fontsize)
     ax[4].legend(loc=0,fontsize=fontsize)
+    if n_files > 6:
+        ax[5].legend(loc=0,fontsize=fontsize)
 
     # optimize the figure layout
     pyplot.tight_layout()
@@ -160,6 +164,9 @@ def plot_decompose_sed(modnames, moddisplaynames, tau, angle,
     
     if single_comp >= 0:
         save_name += '_scomp' + str(single_comp)
+
+    if save_str != '':
+        save_name += '_' + save_str
 
     if save_png:
         fig.savefig(save_name+'.png')
