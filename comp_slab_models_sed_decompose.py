@@ -16,7 +16,7 @@ import matplotlib.gridspec as gridspec
 
 def plot_decompose_sed(modnames, moddisplaynames, tau, angle,
                        single_comp=-1, max_plot_diff=10.0, save_str='',
-                       save_eps=False, save_png=False):
+                       save_eps=False, save_png=False, plot_all=False):
 
     # generate the filename
     ifilenames = [modname + '_t' + tau + '_i'+ angle + 'a000.sed'
@@ -103,6 +103,9 @@ def plot_decompose_sed(modnames, moddisplaynames, tau, angle,
         gindxs, = np.where(ave_sed_comps[:,k] > 0.0)
         if len(gindxs) > 0:
             ax[0].plot(all_data[gindxs,0,0],ave_sed_comps[gindxs,k],total_symtype[k],label=label_text[k])
+            if plot_all:
+                for z in range(n_files):
+                    ax[0].plot(all_data[gindxs,0,0],all_data[gindxs,comp_indxs[k],z],total_symtype[k])
 
         # plot the percentage difference for each model from the average
         for i in range(n_files):

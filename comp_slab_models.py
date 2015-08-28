@@ -44,6 +44,8 @@ if __name__ == "__main__":
     parser.add_argument("-m", "--max_plot_diff", metavar=float, default=10.0, 
                         help="maximum difference in percentage to plot")
 
+    parser.add_argument("--dirty_gtype", action="store_true",
+                        help="display the different grain emission types (special DIRTY runs) [default=False]")
     parser.add_argument("--dirty_econs", action="store_true",
                         help="energy conservation convergence (special DIRTY runs) [default=False]")
     parser.add_argument("--dirty_mscat", action="store_true",
@@ -79,6 +81,7 @@ if __name__ == "__main__":
     mplot_diff = float(args.max_plot_diff)
 
     # models to display
+    plot_all = False 
     if args.dirty_nz:
         nbinzs = ['10','20','50','100','200','500']
         moddisplaynames = ['DI (Nz='+nbinz+')' for nbinz in reversed(nbinzs)]
@@ -94,8 +97,7 @@ if __name__ == "__main__":
         scomp = 0
         save_str = 'skirt_nz'
     elif args.dirty_nphot:
-        #nphots = ['3.2e5','1e6','3.2e6','1e7','3.2e7','1e8']
-        nphots = ['3.2e5','1e6','3.2e6','1e7','3.2e7']
+        nphots = ['3.2e5','1e6','3.2e6','1e7','3.2e7','1e8']
         moddisplaynames = ['DI (N='+nphot+')' for nphot in reversed(nphots)]
         modnames = ['dirty_nphot_'+nphot for nphot in reversed(nphots)]
         imodnames = ['dirty_nphot/' + modname + '_slab_eff' for modname in modnames]
@@ -122,6 +124,14 @@ if __name__ == "__main__":
         imodnames = ['dirty_econs/' + modname + '_slab_eff' for modname in modnames]
         scomp = 0
         save_str = 'dirty_econs'
+    elif args.dirty_gtype:
+        gtypes = ['eq','eff']
+        moddisplaynames = ['DI (gtype='+gtype+')' for gtype in gtypes]
+        modnames = ['dirty','dirty']
+        imodnames = ['dirty/dirty_slab_' + gtype for gtype in gtypes]
+        scomp = 0
+        save_str = 'dirty_gtype'
+        plot_all = True
     else:
         moddisplaynames = ['CRT','DART-ray','DIRTY','Hyperion','SKIRT','SOC','TRADING']
         modnames = ['crt','dartr','dirty','hyper','skirt','SOC','tradi']
@@ -138,6 +148,6 @@ if __name__ == "__main__":
                                    save_str=save_str, save_eps=args.eps, save_png=args.png)
             else:
                 plot_decompose_sed(imodnames, moddisplaynames, tau, angle,
-                                   single_comp=scomp, max_plot_diff=mplot_diff,
+                                   single_comp=scomp, max_plot_diff=mplot_diff, plot_all=plot_all,
                                    save_str=save_str, save_eps=args.eps, save_png=args.png)
                                    

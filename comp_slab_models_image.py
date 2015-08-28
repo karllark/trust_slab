@@ -147,17 +147,8 @@ def plot_imagegrid(modnames, moddisplaynames, wave, tau, angle,
     cut1_plot_y_all = np.median(ave_image_comp[:,cut1[0]:cut1[1]],axis=1)
     cut2_plot_y_all = np.median(ave_image_comp[cut2[0]:cut2[1],:],axis=0)
 
-    # now display everything    
+    # now display the cuts    
     for i in range(n_files):
-        # display images
-        #if comp_index > -2:
-        #    cur_cax = ax[i].imshow(all_images[:,:,i],vmin=plot_minmax[0],vmax=plot_minmax[1], origin='lower')#,
-        #else:
-        cur_cax = ax[i].imshow(all_images[:,:,i],norm=LogNorm(vmin=plot_minmax[0],vmax=plot_minmax[1]), origin='lower')#,
-#                               cmap=pyplot.get_cmap('cubehelix'))
-        ax[i].set_title(displaynames[i],fontsize=fontsize)
-        ax[i].get_xaxis().set_visible(False)
-        ax[i].get_yaxis().set_visible(False)
 
         # first cut (y)
         cut1_plot_y = np.median(all_images[:,cut1[0]:cut1[1],i],axis=1)
@@ -244,6 +235,20 @@ def plot_imagegrid(modnames, moddisplaynames, wave, tau, angle,
     ax[n_files+3].set_ylim(new_ylim)
     if n_files > 6:
         ax[n_files+3].legend(loc=1,fontsize=fontsize)
+
+    # now display the images    
+    for i in range(n_files):
+        # display images
+        #if comp_index > -2:
+        #    cur_cax = ax[i].imshow(all_images[:,:,i],vmin=plot_minmax[0],vmax=plot_minmax[1], origin='lower')#,
+        #else:
+        #cur_cax = ax[i].imshow(all_images[:,:,i],norm=LogNorm(vmin=plot_minmax[0],vmax=plot_minmax[1]), origin='lower')#,
+        cur_cax = ax[i].imshow(all_images[:,:,i],norm=LogNorm(vmin=cut1_minmax_y_vals[0],vmax=cut1_minmax_y_vals[1]), origin='lower')#,
+#                               cmap=pyplot.get_cmap('cubehelix'))
+        ax[i].set_title(displaynames[i],fontsize=fontsize)
+        ax[i].get_xaxis().set_visible(False)
+        ax[i].get_yaxis().set_visible(False)
+
 
     # add the overall label
     fig.text (0.5, 0.99, fig_label, horizontalalignment='center',
