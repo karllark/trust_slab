@@ -97,14 +97,14 @@ if __name__ == "__main__":
         scomp = 0
         save_str = 'skirt_nz'
     elif args.dirty_nphot:
-        nphots = ['3.2e5','1e6','3.2e6','1e7','3.2e7','1e8']
+        nphots = ['1e5','3.2e5','1e6','3.2e6','1e7','3.2e7','1e8']
         moddisplaynames = ['DI (N='+nphot+')' for nphot in reversed(nphots)]
         modnames = ['dirty_nphot_'+nphot for nphot in reversed(nphots)]
         imodnames = ['dirty_nphot/' + modname + '_slab_eff' for modname in modnames]
         scomp = 0
         save_str = 'dirty_nphot' 
     elif args.dirty_mscat:
-        mscats = ['1','5','10','20','50','75','100','150','200','300']
+        mscats = ['1','5','10','20','50','75','100','150','200','300','500','1000']
         moddisplaynames = ['DI (mscat=' + mscat + ')' for mscat in reversed(mscats)]
         modnames = ['dirty_mscat_' + mscat for mscat in reversed(mscats)]
         imodnames = ['dirty_mscat/' + modname + '_slab_eff' for modname in modnames]
@@ -133,9 +133,10 @@ if __name__ == "__main__":
         save_str = 'dirty_gtype'
         plot_all = True
     else:
-        moddisplaynames = ['CRT','DART-ray','DIRTY','Hyperion','SKIRT','SOC','TRADING']
-        modnames = ['crt','dartr','dirty','hyper','skirt','SOC','tradi']
+        moddisplaynames = ['CRT','DART-ray','DIRTY','DIRTY(old)','Hyperion','SKIRT','SOC','TRADING']
+        modnames = ['crt','dartr','dirty','dirty_prescat','hyper','skirt','SOC','tradi']
         imodnames = [modname + '/' + modname + '_slab_eff' for modname in modnames]
+        imodnames[3] = 'dirty_prescat/dirty_slab_eff'
         scomp = -1
         save_str = ''
 

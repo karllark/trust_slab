@@ -56,7 +56,9 @@ def plot_imagegrid(modnames, moddisplaynames, wave, tau, angle,
     n_image_col = 2
     dm = divmod(n_files,nrows)
     if dm[0] >= n_image_col & dm[0] > 0:
-        n_image_col = dm[0] + 1
+        n_image_col = dm[0]
+        if dm[1] > 0:
+            n_image_col += 1
 
     # setup figure
     xsize = 12
@@ -213,7 +215,7 @@ def plot_imagegrid(modnames, moddisplaynames, wave, tau, angle,
     cur_ylim = ax[n_files+1].get_ylim()
     new_ylim = [max([cur_ylim[0],-1.0*max_plot_diff]),min([cur_ylim[1],max_plot_diff])]
     ax[n_files+1].set_ylim(new_ylim)
-    if n_files > 6:
+    if n_files >= 6:
         ax[n_files+1].legend(loc=1,fontsize=fontsize)
 
     # setup for the second cut plot
@@ -233,7 +235,7 @@ def plot_imagegrid(modnames, moddisplaynames, wave, tau, angle,
     cur_ylim = ax[n_files+1].get_ylim()
     new_ylim = [max([cur_ylim[0],-1.0*max_plot_diff]),min([cur_ylim[1],max_plot_diff])]
     ax[n_files+3].set_ylim(new_ylim)
-    if n_files > 6:
+    if n_files >= 6:
         ax[n_files+3].legend(loc=1,fontsize=fontsize)
 
     # now display the images    
