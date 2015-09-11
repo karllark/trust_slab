@@ -37,7 +37,7 @@ def plot_decompose_sed(modnames, moddisplaynames, tau, angle,
 
     # plot information
     fig_label = r'Slab, $\tau (1 \mu m)$ = '+tau+r', $\theta$ = ' + angle
-    symtype = ['b-','g-','r-','c-','m-','y-','k-','b--','g--','r--']
+    symtype = ['b-','g-','r-','c-','m-','y-','k-','b--','g--','r--','c--','m--','y--','k--']
     total_symtype = ['k-','b--','b:','r--','r:','b--']
     fontsize = 12
 

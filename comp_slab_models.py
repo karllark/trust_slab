@@ -133,10 +133,14 @@ if __name__ == "__main__":
         save_str = 'dirty_gtype'
         plot_all = True
     else:
+        moddisplaynames = ['CRT','DART-ray','DIRTY','Hyperion','SKIRT','SOC','TRADING']
+        modnames = ['crt','dartr','dirty','hyper','skirt','SOC','tradi']
         moddisplaynames = ['CRT','DART-ray','DIRTY','DIRTY(old)','Hyperion','SKIRT','SOC','TRADING']
         modnames = ['crt','dartr','dirty','dirty_prescat','hyper','skirt','SOC','tradi']
+        moddisplaynames = ['CRT','DART-ray','DIRTY','Hyperion','SKIRT','SOC','TRADING']
+        modnames = ['crt','dartr','dirty_prescat','hyper','skirt','SOC','tradi']
         imodnames = [modname + '/' + modname + '_slab_eff' for modname in modnames]
-        imodnames[3] = 'dirty_prescat/dirty_slab_eff'
+        imodnames[2] = 'dirty_prescat/dirty_slab_eff'
         scomp = -1
         save_str = ''
 
