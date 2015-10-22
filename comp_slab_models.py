@@ -26,7 +26,7 @@ if __name__ == "__main__":
 
     good_angles = ['000','030','060','090','120','150','180','all']
     good_taus = ['1e-2','1e-1','1e0','1e1','all']
-    good_waves = ['000.15','000.53','035.11','151.99','all']
+    good_waves = ['000.15','000.53','008.11','023.10','035.11','151.99','all']
 
     # commandline parser
     parser = argparse.ArgumentParser()
@@ -44,6 +44,13 @@ if __name__ == "__main__":
     parser.add_argument("-m", "--max_plot_diff", metavar=float, default=10.0, 
                         help="maximum difference in percentage to plot")
 
+    parser.add_argument("--eff", action="store_true",
+                        help="Display results for the effective grain emission approximation [Default]")
+    parser.add_argument("--equ", action="store_true",
+                        help="Display results for the equilibrium heating only approximation")
+    parser.add_argument("--sto", action="store_true",
+                        help="Display results for the full heating solution (equilibrium + non-equilibrium)")
+
     parser.add_argument("--dirty_gtype", action="store_true",
                         help="display the different grain emission types (special DIRTY runs) [default=False]")
     parser.add_argument("--dirty_econs", action="store_true",
@@ -52,6 +59,12 @@ if __name__ == "__main__":
                         help="max scat convergence (special DIRTY runs) [default=False]")
     parser.add_argument("--dirty_nphot", action="store_true",
                         help="nphot convergence (special DIRTY runs) [default=False]")
+    parser.add_argument("--dirty_forcebiasxi", action="store_true",
+                        help="value of xi for biasing the forced scattering (special DIRTY runs) [default=False]")
+    parser.add_argument("--dirty_biasxi", action="store_true",
+                        help="value of xi for biasing the regular scattering (special DIRTY runs) [default=False]")
+    parser.add_argument("--dirty_emitbiasxi", action="store_true",
+                        help="value of xi for biasing the dust emission (special DIRTY runs) [default=False]")
     parser.add_argument("--dirty_nz", action="store_true",
                         help="number of z bins in slab (special DIRTY runs) [default=False]")
     parser.add_argument("--skirt_nz", action="store_true",
@@ -76,7 +89,10 @@ if __name__ == "__main__":
 
     waves = [args.wave]
     if 'all' in waves:
-        waves = good_waves[0:len(good_waves)-1]
+        if args.sto:
+            waves = ['000.15','000.53','008.11','023.10','151.99']
+        else:
+            waves = ['000.15','000.53','035.11','151.99']
 
     mplot_diff = float(args.max_plot_diff)
 
@@ -124,23 +140,56 @@ if __name__ == "__main__":
         imodnames = ['dirty_econs/' + modname + '_slab_eff' for modname in modnames]
         scomp = 0
         save_str = 'dirty_econs'
+    elif args.dirty_forcebiasxi:
+        xis = ['0.0','0.25','0.5','0.75','1.0']
+        moddisplaynames = ['DI (fxis=' + xi + ')' for xi in xis]
+        modnames = ['dirty_forcebiasxi_' + xi for xi in xis]
+        imodnames = ['dirty_forcebiasxi/' + modname + '_slab_eff' for modname in modnames]
+        scomp = 0
+        save_str = 'dirty_forcebiasxi'
+    elif args.dirty_biasxi:
+        xis = ['0.0','0.05','0.10','0.15','0.25']
+        moddisplaynames = ['DI (xis=' + xi + ')' for xi in xis]
+        modnames = ['dirty_biasxi_' + xi for xi in xis]
+        imodnames = ['dirty_biasxi/' + modname + '_slab_eff' for modname in modnames]
+        scomp = 0
+        save_str = 'dirty_forcebiasxi'
+    elif args.dirty_emitbiasxi:
+        xis = ['0.0','0.1','0.25','0.5','0.75','1.0']
+        moddisplaynames = ['DI (exis=' + xi + ')' for xi in xis]
+        modnames = ['dirty_emitbiasxi_' + xi for xi in xis]
+        imodnames = ['dirty_emitbiasxi/' + modname + '_slab_eff' for modname in modnames]
+        scomp = 0
+        save_str = 'dirty_forcebiasxi'
     elif args.dirty_gtype:
-        gtypes = ['eq','eff']
+        gtypes = ['equ','eff']
         moddisplaynames = ['DI (gtype='+gtype+')' for gtype in gtypes]
         modnames = ['dirty','dirty']
         imodnames = ['dirty/dirty_slab_' + gtype for gtype in gtypes]
         scomp = 0
         save_str = 'dirty_gtype'
         plot_all = True
+    elif args.equ:
+        moddisplaynames = ['CRT','DIRTY']
+        modnames = ['crt','dirty']
+        imodnames = [modname + '/' + modname + '_slab_equ' for modname in modnames]
+        scomp = -1
+        save_str = 'equ'
+    elif args.sto:
+        moddisplaynames = ['CRT']
+        modnames = ['crt']
+        imodnames = [modname + '/' + modname + '_slab_sto' for modname in modnames]
+        scomp = -1
+        save_str = 'sto'
     else:
-        moddisplaynames = ['CRT','DART-ray','DIRTY','Hyperion','SKIRT','SOC','TRADING']
-        modnames = ['crt','dartr','dirty','hyper','skirt','SOC','tradi']
-        moddisplaynames = ['CRT','DART-ray','DIRTY','DIRTY(old)','Hyperion','SKIRT','SOC','TRADING']
-        modnames = ['crt','dartr','dirty','dirty_prescat','hyper','skirt','SOC','tradi']
-        moddisplaynames = ['CRT','DART-ray','DIRTY','Hyperion','SKIRT','SOC','TRADING']
-        modnames = ['crt','dartr','dirty_prescat','hyper','skirt','SOC','tradi']
+        moddisplaynames = ['CRT','DART-ray','DIRTY','Hyperion','SKIRT','TRADING','SOC']
+        modnames = ['crt','dartr','dirty','hyper','skirt','tradi','SOC']
+        #moddisplaynames = ['CRT','DART-ray','DIRTY','DIRTY(old)','Hyperion','SKIRT','SOC','TRADING']
+        #modnames = ['crt','dartr','dirty','dirty_prescat','hyper','skirt','SOC','tradi']
+        #moddisplaynames = ['CRT','DART-ray','DIRTY','Hyperion','SKIRT','SOC','TRADING']
+        #modnames = ['crt','dartr','dirty_prescat','hyper','skirt','SOC','tradi']
         imodnames = [modname + '/' + modname + '_slab_eff' for modname in modnames]
-        imodnames[2] = 'dirty_prescat/dirty_slab_eff'
+        #imodnames[3] = 'dirty_prescat/dirty_slab_eff'
         scomp = -1
         save_str = ''
 

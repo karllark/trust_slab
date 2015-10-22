@@ -85,10 +85,12 @@ def plot_decompose_sed(modnames, moddisplaynames, tau, angle,
     for k in range(n_comps):
         for j in range(n_waves):
             gindxs, = np.where(all_data[j,comp_indxs[k],:] > 0)
-            if len(gindxs) > 2:
+            if len(gindxs) >= 2:
                 ave_sed_comps[j,k] = np.median(all_data[j,comp_indxs[k],gindxs])
                 #print(all_data[j,k,gindxs])
                 #print(ave_sed_comps[j,k])
+            elif len(gindxs) >= 1:
+                ave_sed_comps[j,k] = all_data[j,comp_indxs[k],gindxs[0]]
 
     # if single comp is set to a non-negative value, then use that model as the comparison instead
     #   of the average
