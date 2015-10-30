@@ -61,6 +61,8 @@ if __name__ == "__main__":
                         help="nphot convergence (special DIRTY runs) [default=False]")
     parser.add_argument("--dirty_forcebiasxi", action="store_true",
                         help="value of xi for biasing the forced scattering (special DIRTY runs) [default=False]")
+    parser.add_argument("--dirty_newforcebiasxi", action="store_true",
+                        help="value of xi for biasing the forced scattering (special DIRTY runs) [default=False]")
     parser.add_argument("--dirty_biasxi", action="store_true",
                         help="value of xi for biasing the regular scattering (special DIRTY runs) [default=False]")
     parser.add_argument("--dirty_emitbiasxi", action="store_true",
@@ -142,18 +144,25 @@ if __name__ == "__main__":
         save_str = 'dirty_econs'
     elif args.dirty_forcebiasxi:
         xis = ['0.0','0.25','0.5','0.75','1.0']
-        moddisplaynames = ['DI (fxis=' + xi + ')' for xi in xis]
-        modnames = ['dirty_forcebiasxi_' + xi for xi in xis]
+        moddisplaynames = ['DI (fxis=' + xi + ')' for xi in reversed(xis)]
+        modnames = ['dirty_forcebiasxi_' + xi for xi in reversed(xis)]
         imodnames = ['dirty_forcebiasxi/' + modname + '_slab_eff' for modname in modnames]
-        scomp = 0
+        scomp = 2
         save_str = 'dirty_forcebiasxi'
+    elif args.dirty_newforcebiasxi:
+        xis = ['0.0','0.25','0.5','0.75','1.0']
+        moddisplaynames = ['DI (xis=' + xi + ')' for xi in reversed(xis)]
+        modnames = ['dirty_newforcebiasxi_' + xi for xi in reversed(xis)]
+        imodnames = ['dirty_newforcebiasxi/' + modname + '_slab_eff' for modname in modnames]
+        scomp = 2
+        save_str = 'dirty_newforcebiasxi'
     elif args.dirty_biasxi:
         xis = ['0.0','0.05','0.10','0.15','0.25']
-        moddisplaynames = ['DI (xis=' + xi + ')' for xi in xis]
-        modnames = ['dirty_biasxi_' + xi for xi in xis]
+        moddisplaynames = ['DI (xis=' + xi + ')' for xi in reversed(xis)]
+        modnames = ['dirty_biasxi_' + xi for xi in reversed(xis)]
         imodnames = ['dirty_biasxi/' + modname + '_slab_eff' for modname in modnames]
-        scomp = 0
-        save_str = 'dirty_forcebiasxi'
+        scomp = 2
+        save_str = 'dirty_biasxi'
     elif args.dirty_emitbiasxi:
         xis = ['0.0','0.1','0.25','0.5','0.75','1.0']
         moddisplaynames = ['DI (exis=' + xi + ')' for xi in xis]
@@ -170,14 +179,14 @@ if __name__ == "__main__":
         save_str = 'dirty_gtype'
         plot_all = True
     elif args.equ:
-        moddisplaynames = ['CRT','DIRTY']
-        modnames = ['crt','dirty']
+        moddisplaynames = ['CRT','DIRTY','SKIRT']
+        modnames = ['crt','dirty','skirt']
         imodnames = [modname + '/' + modname + '_slab_equ' for modname in modnames]
         scomp = -1
         save_str = 'equ'
     elif args.sto:
-        moddisplaynames = ['CRT']
-        modnames = ['crt']
+        moddisplaynames = ['CRT','SKIRT']
+        modnames = ['crt','skirt']
         imodnames = [modname + '/' + modname + '_slab_sto' for modname in modnames]
         scomp = -1
         save_str = 'sto'
