@@ -15,6 +15,8 @@ import matplotlib.pyplot as pyplot
 import matplotlib.gridspec as gridspec
 from matplotlib.colors import LogNorm
 
+import matplotlib as mpl
+
 from astropy.io import fits
 
 def plot_imagegrid(modnames, moddisplaynames, wave, tau, angle,
@@ -238,6 +240,8 @@ def plot_imagegrid(modnames, moddisplaynames, wave, tau, angle,
     if n_files >= 6:
         ax[n_files+3].legend(loc=1,fontsize=fontsize)
 
+    #mpl.cm.register_cmap(name='cubehelix3', data=mpl._cm.cubehelix(gamma=1.0, s=1.0, r=2.0, h=2.0))
+
     # now display the images    
     for i in range(n_files):
         # display images
@@ -246,7 +250,7 @@ def plot_imagegrid(modnames, moddisplaynames, wave, tau, angle,
         #else:
         #cur_cax = ax[i].imshow(all_images[:,:,i],norm=LogNorm(vmin=plot_minmax[0],vmax=plot_minmax[1]), origin='lower')#,
         cur_cax = ax[i].imshow(all_images[:,:,i],norm=LogNorm(vmin=cut1_minmax_y_vals[0],vmax=cut1_minmax_y_vals[1]), origin='lower')#,
-#                               cmap=pyplot.get_cmap('cubehelix'))
+#                               cmap=pyplot.get_cmap('cubehelix3'))
         ax[i].set_title(displaynames[i],fontsize=fontsize)
         ax[i].get_xaxis().set_visible(False)
         ax[i].get_yaxis().set_visible(False)

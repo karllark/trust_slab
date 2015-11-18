@@ -71,6 +71,8 @@ if __name__ == "__main__":
                         help="number of z bins in slab (special DIRTY runs) [default=False]")
     parser.add_argument("--skirt_nz", action="store_true",
                         help="number of grid cells in the z direction (special SKIRT runs) [default=False]")
+    parser.add_argument("--skirt_nphot", action="store_true",
+                        help="nphot convergence (special SKIRT runs) [default=False]")
     parser.add_argument("--skirt_wr", action="store_true",
                         help="minimum weight reduction (special SKIRT runs) [default=False]")
 
@@ -108,19 +110,35 @@ if __name__ == "__main__":
         scomp = 0
         save_str = 'dirty_nz'
     elif args.skirt_nz:
-        nbinzs = ['005','010','030','100','200','400']
+        if len(angles) > 1:
+            angles = ['000','090','180']
+        nbinzs = ['001','003','010','030','100','300']
         moddisplaynames = ['SK (Nz='+nbinz+')' for nbinz in reversed(nbinzs)]
-        modnames = ['skirtnz'+nbinz for nbinz in reversed(nbinzs)]
-        imodnames = ['skirt_nbinz/' + modname + '_slab_eff' for modname in modnames]
+        modnames = ['skirt_nz'+nbinz for nbinz in reversed(nbinzs)]
+        imodnames = ['skirt_nz/' + modname + '_slab_eff' for modname in modnames]
         scomp = 0
         save_str = 'skirt_nz'
     elif args.dirty_nphot:
-        nphots = ['1e5','3.2e5','1e6','3.2e6','1e7','3.2e7','1e8']
+        if len(angles) > 1:
+            angles = ['000','090','180']
+        if len(taus) > 1:
+            taus = ['1e0','1e1']
+        nphots = ['3.2e5','1e6','3.2e6','1e7','3.2e7']
+        #nphots = ['1e5','3.2e5','1e6','3.2e6','1e7','3.2e7','1e8']
         moddisplaynames = ['DI (N='+nphot+')' for nphot in reversed(nphots)]
         modnames = ['dirty_nphot_'+nphot for nphot in reversed(nphots)]
         imodnames = ['dirty_nphot/' + modname + '_slab_eff' for modname in modnames]
         scomp = 0
         save_str = 'dirty_nphot' 
+    elif args.skirt_nphot:
+        if len(angles) > 1:
+            angles = ['000','090','180']
+        nphots = ['1e5','1e6','1e7','1e8']
+        moddisplaynames = ['SK (N='+nphot+')' for nphot in reversed(nphots)]
+        modnames = ['skirt_nphot'+nphot for nphot in reversed(nphots)]
+        imodnames = ['skirt_nphot/' + modname + '_slab_eff' for modname in modnames]
+        scomp = 0
+        save_str = 'skirt_nphot' 
     elif args.dirty_mscat:
         mscats = ['1','5','10','20','50','75','100','150','200','300','500','1000']
         moddisplaynames = ['DI (mscat=' + mscat + ')' for mscat in reversed(mscats)]
@@ -150,6 +168,10 @@ if __name__ == "__main__":
         scomp = 2
         save_str = 'dirty_forcebiasxi'
     elif args.dirty_newforcebiasxi:
+        if len(angles) > 1:
+            angles = ['000','090','180']
+        if len(taus) > 1:
+            taus = ['1e0','1e1']
         xis = ['0.0','0.25','0.5','0.75','1.0']
         moddisplaynames = ['DI (xis=' + xi + ')' for xi in reversed(xis)]
         modnames = ['dirty_newforcebiasxi_' + xi for xi in reversed(xis)]
