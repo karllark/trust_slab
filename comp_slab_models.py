@@ -32,7 +32,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
     # default is to compare the global SEDs, set for image comparison
-    parser.add_argument("--image", help="Display image comparison", action="store_true")
+    parser.add_argument("--image", help="Display image comparison",
+                        action="store_true")
 
     # options for which models to compare
     parser.add_argument("-w", "--wave", choices=good_waves, default='000.53',
@@ -45,40 +46,57 @@ if __name__ == "__main__":
                         help="maximum difference in percentage to plot")
 
     parser.add_argument("--eff", action="store_true",
-                        help="Display results for the effective grain emission approximation [Default]")
+                        help="Display results for the effective grain " + \
+                        "emission approximation [Default]")
     parser.add_argument("--equ", action="store_true",
-                        help="Display results for the equilibrium heating only approximation")
+                        help="Display results for the equilibrium heating " + \
+                        "only approximation")
     parser.add_argument("--sto", action="store_true",
-                        help="Display results for the full heating solution (equilibrium + non-equilibrium)")
+                        help="Display results for the full heating solution " + \
+                        "(equilibrium + non-equilibrium)")
 
     parser.add_argument("--dirty_gtype", action="store_true",
-                        help="display the different grain emission types (special DIRTY runs) [default=False]")
+                        help="display the different grain emission types " + \
+                        "(special DIRTY runs) [default=False]")
     parser.add_argument("--dirty_econs", action="store_true",
-                        help="energy conservation convergence (special DIRTY runs) [default=False]")
+                        help="energy conservation convergence " + \
+                        "(special DIRTY runs) [default=False]")
     parser.add_argument("--dirty_mscat", action="store_true",
-                        help="max scat convergence (special DIRTY runs) [default=False]")
+                        help="max scat convergence " + \
+                        "(special DIRTY runs) [default=False]")
     parser.add_argument("--dirty_nphot", action="store_true",
-                        help="nphot convergence (special DIRTY runs) [default=False]")
+                        help="nphot convergence " + \
+                        "(special DIRTY runs) [default=False]")
     parser.add_argument("--dirty_forcebiasxi", action="store_true",
-                        help="value of xi for biasing the forced scattering (special DIRTY runs) [default=False]")
+                        help="value of xi for biasing the forced scattering " + \
+                        "(special DIRTY runs) [default=False]")
     parser.add_argument("--dirty_newforcebiasxi", action="store_true",
-                        help="value of xi for biasing the forced scattering (special DIRTY runs) [default=False]")
+                        help="value of xi for biasing the forced scattering " + \
+                        "(special DIRTY runs) [default=False]")
     parser.add_argument("--dirty_biasxi", action="store_true",
-                        help="value of xi for biasing the regular scattering (special DIRTY runs) [default=False]")
+                        help="value of xi for biasing the regular scattering" + \
+                        " (special DIRTY runs) [default=False]")
     parser.add_argument("--dirty_emitbiasxi", action="store_true",
-                        help="value of xi for biasing the dust emission (special DIRTY runs) [default=False]")
+                        help="value of xi for biasing the dust emission " + \
+                        "(special DIRTY runs) [default=False]")
     parser.add_argument("--dirty_nz", action="store_true",
-                        help="number of z bins in slab (special DIRTY runs) [default=False]")
+                        help="number of z bins in slab " + \
+                        "(special DIRTY runs) [default=False]")
     parser.add_argument("--skirt_nz", action="store_true",
-                        help="number of grid cells in the z direction (special SKIRT runs) [default=False]")
-    parser.add_argument("--skirt_nphot", action="store_true",
-                        help="nphot convergence (special SKIRT runs) [default=False]")
+                        help="number of grid cells in the z direction " + \
+                        "(special SKIRT runs) [default=False]")
     parser.add_argument("--skirt_wr", action="store_true",
-                        help="minimum weight reduction (special SKIRT runs) [default=False]")
+                        help="minimum weight reduction " + \
+                        "(special SKIRT runs) [default=False]")
 
-    parser.add_argument("-e", "--eps", help="Save the plot as an encapsulated file",
+    parser.add_argument("--eps", help="Save the plot as an " + \
+                        "encapsulated file",
                         action="store_true")
-    parser.add_argument("-p", "--png", help="Save the plot as a portable network graphics file",
+    parser.add_argument("--pdf", help="Save the plot as a " + \
+                        "portable document file file",
+                        action="store_true")
+    parser.add_argument("--png", help="Save the plot as a " + \
+                        "portable network graphics file",
                         action="store_true")
     args = parser.parse_args()
 
@@ -106,44 +124,34 @@ if __name__ == "__main__":
         nbinzs = ['10','20','50','100','200','500']
         moddisplaynames = ['DI (Nz='+nbinz+')' for nbinz in reversed(nbinzs)]
         modnames = ['dirty_nbinz_'+nbinz for nbinz in reversed(nbinzs)]
-        imodnames = ['dirty_nbinz/' + modname + '_slab_eff' for modname in modnames]
+        imodnames = ['dirty_nbinz/' + modname + '_slab_eff'
+                     for modname in modnames]
         scomp = 0
         save_str = 'dirty_nz'
     elif args.skirt_nz:
-        if len(angles) > 1:
-            angles = ['000','090','180']
-        nbinzs = ['001','003','010','030','100','300']
+        nbinzs = ['005','010','030','100','200','400']
         moddisplaynames = ['SK (Nz='+nbinz+')' for nbinz in reversed(nbinzs)]
-        modnames = ['skirt_nz'+nbinz for nbinz in reversed(nbinzs)]
-        imodnames = ['skirt_nz/' + modname + '_slab_eff' for modname in modnames]
+        modnames = ['skirtnz'+nbinz for nbinz in reversed(nbinzs)]
+        imodnames = ['skirt_nbinz/' + modname + '_slab_eff'
+                     for modname in modnames]
         scomp = 0
         save_str = 'skirt_nz'
     elif args.dirty_nphot:
-        if len(angles) > 1:
-            angles = ['000','090','180']
-        if len(taus) > 1:
-            taus = ['1e0','1e1']
-        nphots = ['3.2e5','1e6','3.2e6','1e7','3.2e7']
-        #nphots = ['1e5','3.2e5','1e6','3.2e6','1e7','3.2e7','1e8']
+        nphots = ['1e5','3.2e5','1e6','3.2e6','1e7','3.2e7','1e8']
         moddisplaynames = ['DI (N='+nphot+')' for nphot in reversed(nphots)]
         modnames = ['dirty_nphot_'+nphot for nphot in reversed(nphots)]
-        imodnames = ['dirty_nphot/' + modname + '_slab_eff' for modname in modnames]
+        imodnames = ['dirty_nphot/' + modname + '_slab_eff'
+                     for modname in modnames]
         scomp = 0
         save_str = 'dirty_nphot' 
-    elif args.skirt_nphot:
-        if len(angles) > 1:
-            angles = ['000','090','180']
-        nphots = ['1e5','1e6','1e7','1e8']
-        moddisplaynames = ['SK (N='+nphot+')' for nphot in reversed(nphots)]
-        modnames = ['skirt_nphot'+nphot for nphot in reversed(nphots)]
-        imodnames = ['skirt_nphot/' + modname + '_slab_eff' for modname in modnames]
-        scomp = 0
-        save_str = 'skirt_nphot' 
     elif args.dirty_mscat:
-        mscats = ['1','5','10','20','50','75','100','150','200','300','500','1000']
-        moddisplaynames = ['DI (mscat=' + mscat + ')' for mscat in reversed(mscats)]
+        mscats = ['1','5','10','20','50','75','100','150','200','300',
+                  '500','1000']
+        moddisplaynames = ['DI (mscat=' + mscat + ')'
+                           for mscat in reversed(mscats)]
         modnames = ['dirty_mscat_' + mscat for mscat in reversed(mscats)]
-        imodnames = ['dirty_mscat/' + modname + '_slab_eff' for modname in modnames]
+        imodnames = ['dirty_mscat/' + modname + '_slab_eff'
+                     for modname in modnames]
         scomp = 0
         save_str = 'dirty_mscat'
     elif args.skirt_wr:
@@ -155,41 +163,43 @@ if __name__ == "__main__":
         save_str = 'skirt_wr'
     elif args.dirty_econs:
         econtargs = ['1.0','0.32','0.1','0.032','0.01','0.0032','0.001']
-        moddisplaynames = ['DI (econs='+econtarg+')' for econtarg in reversed(econtargs)]
+        moddisplaynames = ['DI (econs='+econtarg+')'
+                           for econtarg in reversed(econtargs)]
         modnames = ['dirty_econs_'+econtarg for econtarg in reversed(econtargs)]
-        imodnames = ['dirty_econs/' + modname + '_slab_eff' for modname in modnames]
+        imodnames = ['dirty_econs/' + modname + '_slab_eff'
+                     for modname in modnames]
         scomp = 0
         save_str = 'dirty_econs'
     elif args.dirty_forcebiasxi:
         xis = ['0.0','0.25','0.5','0.75','1.0']
         moddisplaynames = ['DI (fxis=' + xi + ')' for xi in reversed(xis)]
         modnames = ['dirty_forcebiasxi_' + xi for xi in reversed(xis)]
-        imodnames = ['dirty_forcebiasxi/' + modname + '_slab_eff' for modname in modnames]
+        imodnames = ['dirty_forcebiasxi/' + modname + '_slab_eff'
+                     for modname in modnames]
         scomp = 2
         save_str = 'dirty_forcebiasxi'
     elif args.dirty_newforcebiasxi:
-        if len(angles) > 1:
-            angles = ['000','090','180']
-        if len(taus) > 1:
-            taus = ['1e0','1e1']
         xis = ['0.0','0.25','0.5','0.75','1.0']
         moddisplaynames = ['DI (xis=' + xi + ')' for xi in reversed(xis)]
         modnames = ['dirty_newforcebiasxi_' + xi for xi in reversed(xis)]
-        imodnames = ['dirty_newforcebiasxi/' + modname + '_slab_eff' for modname in modnames]
+        imodnames = ['dirty_newforcebiasxi/' + modname + '_slab_eff'
+                     for modname in modnames]
         scomp = 2
         save_str = 'dirty_newforcebiasxi'
     elif args.dirty_biasxi:
         xis = ['0.0','0.05','0.10','0.15','0.25']
         moddisplaynames = ['DI (xis=' + xi + ')' for xi in reversed(xis)]
         modnames = ['dirty_biasxi_' + xi for xi in reversed(xis)]
-        imodnames = ['dirty_biasxi/' + modname + '_slab_eff' for modname in modnames]
+        imodnames = ['dirty_biasxi/' + modname + '_slab_eff'
+                     for modname in modnames]
         scomp = 2
         save_str = 'dirty_biasxi'
     elif args.dirty_emitbiasxi:
         xis = ['0.0','0.1','0.25','0.5','0.75','1.0']
         moddisplaynames = ['DI (exis=' + xi + ')' for xi in xis]
         modnames = ['dirty_emitbiasxi_' + xi for xi in xis]
-        imodnames = ['dirty_emitbiasxi/' + modname + '_slab_eff' for modname in modnames]
+        imodnames = ['dirty_emitbiasxi/' + modname + '_slab_eff'
+                     for modname in modnames]
         scomp = 0
         save_str = 'dirty_forcebiasxi'
     elif args.dirty_gtype:
@@ -201,26 +211,25 @@ if __name__ == "__main__":
         save_str = 'dirty_gtype'
         plot_all = True
     elif args.equ:
-        moddisplaynames = ['CRT','DIRTY','SKIRT']
-        modnames = ['crt','dirty','skirt']
-        imodnames = [modname + '/' + modname + '_slab_equ' for modname in modnames]
+        moddisplaynames = ['CRT','DART-ray','DIRTY','SKIRT']
+        modnames = ['crt','dartr','dirty','skirt']
+        imodnames = [modname + '/' + modname + '_slab_equ'
+                     for modname in modnames]
         scomp = -1
         save_str = 'equ'
     elif args.sto:
-        moddisplaynames = ['CRT','SKIRT']
-        modnames = ['crt','skirt']
-        imodnames = [modname + '/' + modname + '_slab_sto' for modname in modnames]
+        moddisplaynames = ['CRT','DIRTY','SKIRT']
+        modnames = ['crt','dirty','skirt']
+        imodnames = [modname + '/' + modname + '_slab_sto'
+                     for modname in modnames]
         scomp = -1
         save_str = 'sto'
     else:
-        moddisplaynames = ['CRT','DART-ray','DIRTY','Hyperion','SKIRT','TRADING','SOC']
+        moddisplaynames = ['CRT','DART-ray','DIRTY','Hyperion','SKIRT',
+                           'TRADING','SOC']
         modnames = ['crt','dartr','dirty','hyper','skirt','tradi','SOC']
-        #moddisplaynames = ['CRT','DART-ray','DIRTY','DIRTY(old)','Hyperion','SKIRT','SOC','TRADING']
-        #modnames = ['crt','dartr','dirty','dirty_prescat','hyper','skirt','SOC','tradi']
-        #moddisplaynames = ['CRT','DART-ray','DIRTY','Hyperion','SKIRT','SOC','TRADING']
-        #modnames = ['crt','dartr','dirty_prescat','hyper','skirt','SOC','tradi']
-        imodnames = [modname + '/' + modname + '_slab_eff' for modname in modnames]
-        #imodnames[3] = 'dirty_prescat/dirty_slab_eff'
+        imodnames = [modname + '/' + modname + '_slab_eff'
+                     for modname in modnames]
         scomp = -1
         save_str = ''
 
@@ -230,9 +239,12 @@ if __name__ == "__main__":
                 for wave in waves:
                     plot_imagegrid(imodnames, moddisplaynames, wave, tau, angle,
                                    max_plot_diff=mplot_diff, comp_index=scomp,
-                                   save_str=save_str, save_eps=args.eps, save_png=args.png)
+                                   save_str=save_str, save_eps=args.eps,
+                                   save_png=args.png, save_pdf=args.pdf)
             else:
                 plot_decompose_sed(imodnames, moddisplaynames, tau, angle,
-                                   single_comp=scomp, max_plot_diff=mplot_diff, plot_all=plot_all,
-                                   save_str=save_str, save_eps=args.eps, save_png=args.png)
+                                   single_comp=scomp, max_plot_diff=mplot_diff,
+                                   plot_all=plot_all,
+                                   save_str=save_str, save_eps=args.eps,
+                                   save_png=args.png, save_pdf=args.pdf)
                                    

@@ -16,7 +16,8 @@ import matplotlib.gridspec as gridspec
 
 def plot_decompose_sed(modnames, moddisplaynames, tau, angle,
                        single_comp=-1, max_plot_diff=10.0, save_str='',
-                       save_eps=False, save_png=False, plot_all=False):
+                       save_eps=False, save_png=False, save_pdf=False,
+                       plot_all=False):
 
     # generate the filename
     ifilenames = [modname + '_t' + tau + '_i'+ angle + 'a000.sed'
@@ -37,7 +38,8 @@ def plot_decompose_sed(modnames, moddisplaynames, tau, angle,
 
     # plot information
     fig_label = r'Slab, $\tau (1 \mu m)$ = '+tau+r', $\theta$ = ' + angle
-    symtype = ['b-','g-','r-','c-','m-','y-','k-','b--','g--','r--','c--','m--','y--','k--']
+    symtype = ['b-','g-','r-','c-','m-','y-','k-','b--','g--','r--','c--',
+               'm--','y--','k--']
     total_symtype = ['k-','b--','b:','r--','r:','b--']
     fontsize = 12
 
@@ -75,7 +77,8 @@ def plot_decompose_sed(modnames, moddisplaynames, tau, angle,
             n_comps = data.shape[1] - 1
             n_waves = data.shape[0]
 
-        # change the total dust emission column to be just direct dust emission instead of total dust emission
+        # change the total dust emission column to be just direct dust
+        #   emission instead of total dust emission
         data[:,4] -= data[:,5]
     
         # save the decomposed SEDs
@@ -92,8 +95,8 @@ def plot_decompose_sed(modnames, moddisplaynames, tau, angle,
             elif len(gindxs) >= 1:
                 ave_sed_comps[j,k] = all_data[j,comp_indxs[k],gindxs[0]]
 
-    # if single comp is set to a non-negative value, then use that model as the comparison instead
-    #   of the average
+    # if single comp is set to a non-negative value, then use that model as
+    #   the comparison instead of the average
     if single_comp >= 0:
         for k in range(n_comps):
             ave_sed_comps[:,k] = all_data[:,comp_indxs[k],single_comp]
@@ -104,21 +107,27 @@ def plot_decompose_sed(modnames, moddisplaynames, tau, angle,
         # plot the SED and components to the big plot
         gindxs, = np.where(ave_sed_comps[:,k] > 0.0)
         if len(gindxs) > 0:
-            ax[0].plot(all_data[gindxs,0,0],ave_sed_comps[gindxs,k],total_symtype[k],label=label_text[k])
+            ax[0].plot(all_data[gindxs,0,0],ave_sed_comps[gindxs,k],
+                       total_symtype[k],label=label_text[k])
             if plot_all:
                 for z in range(n_files):
-                    ax[0].plot(all_data[gindxs,0,0],all_data[gindxs,comp_indxs[k],z],total_symtype[k])
+                    ax[0].plot(all_data[gindxs,0,0],
+                               all_data[gindxs,comp_indxs[k],z],total_symtype[k])
 
         # plot the percentage difference for each model from the average
         for i in range(n_files):
-            gindxs, = np.where((all_data[:,comp_indxs[k],i] > 0.0) & (ave_sed_comps[:,k] > 0.0))
+            gindxs, = np.where((all_data[:,comp_indxs[k],i] > 0.0) &
+                               (ave_sed_comps[:,k] > 0.0))
             if len(gindxs) > 0:
-                y = 100.*(all_data[gindxs,comp_indxs[k],i] - ave_sed_comps[gindxs,k])/ave_sed_comps[gindxs,k]
+                y = 100.*(all_data[gindxs,comp_indxs[k],i] -
+                          ave_sed_comps[gindxs,k])/ave_sed_comps[gindxs,k]
                 if (comp_indxs[k] == 4) & (i < 6):
                     # needed for to have a good legend
-                    ax[k+1].plot(all_data[gindxs,0,i], y, symtype[fileindxs[i]],label=displaynames[i])
+                    ax[k+1].plot(all_data[gindxs,0,i], y, symtype[fileindxs[i]],
+                                 label=displaynames[i])
                 if (comp_indxs[k] == 5) & (i >= 6):
-                    ax[k+1].plot(all_data[gindxs,0,i], y, symtype[fileindxs[i]],label=displaynames[i])
+                    ax[k+1].plot(all_data[gindxs,0,i], y, symtype[fileindxs[i]],
+                                 label=displaynames[i])
                 else:
                     ax[k+1].plot(all_data[gindxs,0,i], y, symtype[fileindxs[i]])
 
@@ -129,7 +138,8 @@ def plot_decompose_sed(modnames, moddisplaynames, tau, angle,
 
         # put a limit on the max % difference to show
         cur_ylim = ax[k+1].get_ylim()
-        new_ylim = [max([cur_ylim[0],-1.0*max_plot_diff]),min([cur_ylim[1],max_plot_diff])]
+        new_ylim = [max([cur_ylim[0],-1.0*max_plot_diff]),
+                    min([cur_ylim[1],max_plot_diff])]
         ax[k+1].set_ylim(new_ylim)
 
         # label each % difference plot with the component name
@@ -152,14 +162,15 @@ def plot_decompose_sed(modnames, moddisplaynames, tau, angle,
 
     # label the big SED plot with the model details
     ylimits = ax[0].get_ylim()
-    ypos = 10**(np.log10(ylimits[0])+0.92*(np.log10(ylimits[1])-np.log10(ylimits[0])))
+    ypos = 10**(np.log10(ylimits[0])+0.92*(np.log10(ylimits[1])-
+                                           np.log10(ylimits[0])))
     ax[0].text(1e-1,ypos,fig_label,fontsize=1.3*fontsize)
 
     # enable the two needed legends
     ax[0].legend(loc=3,fontsize=fontsize)
-    ax[4].legend(loc=0,fontsize=fontsize)
+    ax[4].legend(loc=2,fontsize=fontsize)
     if n_files > 6:
-        ax[5].legend(loc=0,fontsize=fontsize)
+        ax[5].legend(loc=2,fontsize=fontsize)
 
     # optimize the figure layout
     pyplot.tight_layout()
@@ -175,9 +186,11 @@ def plot_decompose_sed(modnames, moddisplaynames, tau, angle,
 
     if save_png:
         fig.savefig(save_name+'.png')
-        fig.savefig(save_name+'_small.png',dpi=13)
+        fig.savefig(save_name+'_small.png',dpi=11)
     elif save_eps:
         fig.savefig(save_name+'.eps')
+    elif save_pdf:
+        fig.savefig(save_name+'.pdf')
     else:
         pyplot.show()
 
