@@ -21,6 +21,7 @@ from astropy.io import fits
 
 from comp_slab_models_sed_decompose import plot_decompose_sed
 from comp_slab_models_image import plot_imagegrid
+from comp_slab_models_sed_1comp import plot_sed_1comp
 
 if __name__ == "__main__":
 
@@ -34,6 +35,12 @@ if __name__ == "__main__":
     # default is to compare the global SEDs, set for image comparison
     parser.add_argument("--image", help="Display image comparison",
                         action="store_true")
+    parser.add_argument("--sed_1comp", help="Display comparisons for one" +
+                        " component of the global SED",
+                        action="store_true")
+    parser.add_argument("--sed_compval", metavar=int, default=0,
+                        help="Display comparisons for one" +
+                        " component of the global SED")
 
     # options for which models to compare
     parser.add_argument("-w", "--wave", choices=good_waves, default='000.53',
@@ -233,18 +240,27 @@ if __name__ == "__main__":
         scomp = -1
         save_str = ''
 
-    for angle in angles:
-        for tau in taus:
-            if args.image:
-                for wave in waves:
-                    plot_imagegrid(imodnames, moddisplaynames, wave, tau, angle,
-                                   max_plot_diff=mplot_diff, comp_index=scomp,
-                                   save_str=save_str, save_eps=args.eps,
-                                   save_png=args.png, save_pdf=args.pdf)
-            else:
-                plot_decompose_sed(imodnames, moddisplaynames, tau, angle,
-                                   single_comp=scomp, max_plot_diff=mplot_diff,
-                                   plot_all=plot_all,
-                                   save_str=save_str, save_eps=args.eps,
-                                   save_png=args.png, save_pdf=args.pdf)
-                                   
+    if args.sed_1comp:
+        plot_sed_1comp(imodnames, moddisplaynames, int(args.sed_compval),
+                       max_plot_diff=mplot_diff,
+                       save_str=save_str, save_eps=args.eps,
+                       save_png=args.png, save_pdf=args.pdf)
+    else:
+        for angle in angles:
+            for tau in taus:
+                if args.image:
+                    for wave in waves:
+                        plot_imagegrid(imodnames, moddisplaynames,
+                                       wave, tau, angle,
+                                       max_plot_diff=mplot_diff,
+                                       comp_index=scomp,
+                                       save_str=save_str, save_eps=args.eps,
+                                       save_png=args.png, save_pdf=args.pdf)
+                else:
+                    plot_decompose_sed(imodnames, moddisplaynames, tau, angle,
+                                       single_comp=scomp,
+                                       max_plot_diff=mplot_diff,
+                                       plot_all=plot_all,
+                                       save_str=save_str, save_eps=args.eps,
+                                       save_png=args.png, save_pdf=args.pdf)
+                    

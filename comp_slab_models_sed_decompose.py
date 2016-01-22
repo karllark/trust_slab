@@ -14,6 +14,8 @@ import numpy as np
 import matplotlib.pyplot as pyplot
 import matplotlib.gridspec as gridspec
 
+from astropy.table import Table
+
 def plot_decompose_sed(modnames, moddisplaynames, tau, angle,
                        single_comp=-1, max_plot_diff=10.0, save_str='',
                        save_eps=False, save_png=False, save_pdf=False,
@@ -36,6 +38,10 @@ def plot_decompose_sed(modnames, moddisplaynames, tau, angle,
             print(cfile + ' not found.')
     n_files = len(filenames)
 
+    # table for saving offset and standard deviation
+    tab = Table(names=('component','cindex','model','mindex','offset','stddev'),
+                dtype=('S20',int, 'S15', int, float, float))
+    
     # plot information
     fig_label = r'Slab, $\tau (1 \mu m)$ = '+tau+r', $\theta$ = ' + angle
     symtype = ['b-','g-','r-','c-','m-','y-','k-','b--','g--','r--','c--',
@@ -131,6 +137,12 @@ def plot_decompose_sed(modnames, moddisplaynames, tau, angle,
                 else:
                     ax[k+1].plot(all_data[gindxs,0,i], y, symtype[fileindxs[i]])
 
+                # compute statistics and output
+                ave_offset = np.average(y)
+                stddev = np.std(y,ddof=1)
+                tab.add_row([label_text[k], k, displaynames[i], i, ave_offset, stddev])
+                
+                    
         # set the axis limits and type
         ax[k+1].set_xscale('log')
         ax[k+1].set_xlim([0.08,1.1e3])
@@ -175,15 +187,17 @@ def plot_decompose_sed(modnames, moddisplaynames, tau, angle,
     # optimize the figure layout
     pyplot.tight_layout()
 
-    # display the plot
+    # generate the save filename
     save_name =  'slab_t' + tau + '_i' + angle + '_decomposed_sed_comp'
-    
     if single_comp >= 0:
         save_name += '_scomp' + str(single_comp)
-
     if save_str != '':
         save_name += '_' + save_str
 
+    # save the table of the offsets and standard deviations
+    tab.write(save_name+'.dat', format='ascii.commented_header')
+        
+    # display the plot
     if save_png:
         fig.savefig(save_name+'.png')
         fig.savefig(save_name+'_small.png',dpi=11)
