@@ -165,14 +165,16 @@ if __name__ == "__main__":
         weightred = ['1e8','1e7','1e6','1e5','1e4','1e3']
         moddisplaynames = ['SK (wr='+wr+')' for wr in weightred]
         modnames = ['skirtwr'+wr for wr in weightred]
-        imodnames = ['skirt_wr/' + modname + '_slab_eff' for modname in modnames]
+        imodnames = ['skirt_wr/' + modname + '_slab_eff' for
+                     modname in modnames]
         scomp = 0
         save_str = 'skirt_wr'
     elif args.dirty_econs:
         econtargs = ['1.0','0.32','0.1','0.032','0.01','0.0032','0.001']
         moddisplaynames = ['DI (econs='+econtarg+')'
                            for econtarg in reversed(econtargs)]
-        modnames = ['dirty_econs_'+econtarg for econtarg in reversed(econtargs)]
+        modnames = ['dirty_econs_'+econtarg for
+                    econtarg in reversed(econtargs)]
         imodnames = ['dirty_econs/' + modname + '_slab_eff'
                      for modname in modnames]
         scomp = 0
@@ -225,8 +227,8 @@ if __name__ == "__main__":
         scomp = -1
         save_str = 'equ'
     elif args.sto:
-        moddisplaynames = ['CRT','DIRTY','SKIRT']
-        modnames = ['crt','dirty','skirt']
+        moddisplaynames = ['CRT','DIRTY','SKIRT','SOC']
+        modnames = ['crt','dirty','skirt','SOC']
         imodnames = [modname + '/' + modname + '_slab_sto'
                      for modname in modnames]
         scomp = -1

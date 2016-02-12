@@ -39,8 +39,9 @@ def plot_decompose_sed(modnames, moddisplaynames, tau, angle,
     n_files = len(filenames)
 
     # table for saving offset and standard deviation
-    tab = Table(names=('component','cindex','model','mindex','offset','stddev'),
-                dtype=('S20',int, 'S15', int, float, float))
+    tab = Table(names=('component','cindex','model','mindex',
+                       'offset','stddev','maxabsdev'),
+                dtype=('S20',int, 'S15', int, float, float, float))
     
     # plot information
     fig_label = r'Slab, $\tau (1 \mu m)$ = '+tau+r', $\theta$ = ' + angle
@@ -140,7 +141,9 @@ def plot_decompose_sed(modnames, moddisplaynames, tau, angle,
                 # compute statistics and output
                 ave_offset = np.average(y)
                 stddev = np.std(y,ddof=1)
-                tab.add_row([label_text[k], k, displaynames[i], i, ave_offset, stddev])
+                maxabsdev = np.amax(abs(y))
+                tab.add_row([label_text[k], k, displaynames[i], i,
+                             ave_offset, stddev, maxabsdev])
                 
                     
         # set the axis limits and type

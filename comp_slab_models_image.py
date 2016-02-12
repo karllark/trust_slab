@@ -18,14 +18,15 @@ from matplotlib.colors import LogNorm
 import matplotlib as mpl
 
 from astropy.io import fits
+from astropy.table import Table
 
 def plot_imagegrid(modnames, moddisplaynames, wave, tau, angle,
                    comp_index=-2, max_plot_diff=100.0, save_str='',
                    save_eps=False, save_png=False, save_pdf=False):
 
     # generate the filename
-    ifilenames = [modname + '_t' + tau + '_i' + angle + 'a000_w' + wave + '.fits'
-                 for modname in modnames]
+    ifilenames = [modname + '_t' + tau + '_i' + angle + 'a000_w' +
+                  wave + '.fits' for modname in modnames]
     n_orig_files = len(ifilenames)
 
     # check all the files exisit, adjust if not
@@ -44,9 +45,19 @@ def plot_imagegrid(modnames, moddisplaynames, wave, tau, angle,
         print(ifilenames)
         exit(0)
     
+    # table for saving offset and standard deviation
+    tab = Table(names=('model','mindex',
+                       'cut1_offset','cut1_stddev','cut1_maxabsdev',
+                       'cut2_offset','cut2_stddev','cut2_maxabsdev'),
+                dtype=('S15', int, float, float, float, float, float, float))
+
     # plot information
     fig_label = r'Slab, $\tau (1 \mu m)$ = '+tau+r', $\theta$ = ' + angle + \
                 ', $\lambda$ = ' + wave
+    if save_str != '':
+        fig_label += ' (' + save_str + ' case)'
+    else:
+        fig_label += ' (eff case)'
     symtype = ['b-','g-','r-','c-','m-','y-','k-','b--','g--','r--','c--',
                'm--','y--','k--']
     fontsize = 12
@@ -184,11 +195,15 @@ def plot_imagegrid(modnames, moddisplaynames, wave, tau, angle,
                 tname = displaynames[i]
             else:
                 tname = None
-            ax[n_files+1].plot(cut1_plot_x[gindxs],
-                               100.*(cut1_plot_y[gindxs]-
-                                     cut1_plot_y_all[gindxs])/
-                               cut1_plot_y_all[gindxs],
+            y = 100.*((cut1_plot_y[gindxs] - cut1_plot_y_all[gindxs])/ 
+                      cut1_plot_y_all[gindxs])
+            ax[n_files+1].plot(cut1_plot_x[gindxs],y,
                                symtype[fileindxs[i]],label=tname)
+
+            # quantitative info to save
+            cut1_offset = np.average(y)
+            cut1_stddev = np.std(y,ddof=1)
+            cut1_maxabsdev = np.amax(abs(y))
             
         # second cut (x)
         cut2_plot_y = np.median(all_images[cut2[0]:cut2[1],:,i],axis=0)
@@ -216,16 +231,28 @@ def plot_imagegrid(modnames, moddisplaynames, wave, tau, angle,
                 tname = displaynames[i]
             else:
                 tname = None
-            ax[n_files+3].plot(cut2_plot_x[gindxs],
-                               100.*(cut2_plot_y[gindxs]-
-                                     cut2_plot_y_all[gindxs])/
-                               cut2_plot_y_all[gindxs],
+                                     
+            y = 100.*((cut2_plot_y[gindxs] - cut2_plot_y_all[gindxs])/
+                      cut2_plot_y_all[gindxs])
+            ax[n_files+3].plot(cut2_plot_x[gindxs],y,
                                symtype[fileindxs[i]],label=tname)
+
+            # quantitative info to save
+            cut2_offset = np.average(y)
+            cut2_stddev = np.std(y,ddof=1)
+            cut2_maxabsdev = np.amax(abs(y))
+
+        tab.add_row([displaynames[i], i,
+                     cut1_offset, cut1_stddev, cut1_maxabsdev,
+                     cut2_offset, cut2_stddev, cut2_maxabsdev])
+        
 
     # setup for the first cut plot
     ax[n_files].set_yscale('log')
-    cut1_minmax_x_vals[0] -= 0.1*(cut1_minmax_x_vals[1] - cut1_minmax_x_vals[0])
-    cut1_minmax_x_vals[1] += 0.5*(cut1_minmax_x_vals[1] - cut1_minmax_x_vals[0])
+    cut1_minmax_x_vals[0] -= 0.1*(cut1_minmax_x_vals[1] -
+                                  cut1_minmax_x_vals[0])
+    cut1_minmax_x_vals[1] += 0.5*(cut1_minmax_x_vals[1] -
+                                  cut1_minmax_x_vals[0])
     ax[n_files].set_xlim(cut1_minmax_x_vals)
     cut1_minmax_y_vals[0] = 10**(np.log10(cut1_minmax_y_vals[0]) -
                                  (0.1*(np.log10(cut1_minmax_y_vals[1]) -
@@ -250,8 +277,10 @@ def plot_imagegrid(modnames, moddisplaynames, wave, tau, angle,
 
     # setup for the second cut plot
     ax[n_files+2].set_yscale('log')
-    cut2_minmax_x_vals[0] -= 0.1*(cut2_minmax_x_vals[1] - cut2_minmax_x_vals[0])
-    cut2_minmax_x_vals[1] += 0.5*(cut2_minmax_x_vals[1] - cut2_minmax_x_vals[0])
+    cut2_minmax_x_vals[0] -= 0.1*(cut2_minmax_x_vals[1] -
+                                  cut2_minmax_x_vals[0])
+    cut2_minmax_x_vals[1] += 0.5*(cut2_minmax_x_vals[1] -
+                                  cut2_minmax_x_vals[0])
     ax[n_files+2].set_xlim(cut2_minmax_x_vals)
     cut2_minmax_y_vals[0] = 10**(np.log10(cut2_minmax_y_vals[0]) -
                                  (0.1*(np.log10(cut2_minmax_y_vals[1]) -
@@ -305,6 +334,9 @@ def plot_imagegrid(modnames, moddisplaynames, wave, tau, angle,
     if save_str != '':
         save_name += '_' + save_str
     
+    # save the table of the offsets and standard deviations
+    tab.write(save_name+'.dat', format='ascii.commented_header')
+
     if save_png:
         fig.savefig(save_name+'.png')
         fig.savefig(save_name+'_small.png',dpi=11)
