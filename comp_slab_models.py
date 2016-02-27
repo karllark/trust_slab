@@ -89,6 +89,9 @@ if __name__ == "__main__":
     parser.add_argument("--dirty_nz", action="store_true",
                         help="number of z bins in slab " + \
                         "(special DIRTY runs) [default=False]")
+    parser.add_argument("--dirty_nxy", action="store_true",
+                        help="number of xy bins in slab " + \
+                        "(special DIRTY runs) [default=False]")
     parser.add_argument("--skirt_nz", action="store_true",
                         help="number of grid cells in the z direction " + \
                         "(special SKIRT runs) [default=False]")
@@ -128,13 +131,22 @@ if __name__ == "__main__":
     # models to display
     plot_all = False 
     if args.dirty_nz:
-        nbinzs = ['10','20','50','100','200','500']
+        nbinzs = ['1','2','5','10','20','50','100','200','400']
         moddisplaynames = ['DI (Nz='+nbinz+')' for nbinz in reversed(nbinzs)]
         modnames = ['dirty_nbinz_'+nbinz for nbinz in reversed(nbinzs)]
         imodnames = ['dirty_nbinz/' + modname + '_slab_eff'
                      for modname in modnames]
         scomp = 0
         save_str = 'dirty_nz'
+    elif args.dirty_nxy:
+        nbinxys = ['1','2','5','10','20','50','100','200']
+        moddisplaynames = ['DI (Nxy='+nbinxy+')' 
+                           for nbinxy in reversed(nbinxys)]
+        modnames = ['dirty_nbinxy_'+nbinxy for nbinxy in reversed(nbinxys)]
+        imodnames = ['dirty_nbinxy/' + modname + '_slab_eff'
+                     for modname in modnames]
+        scomp = 0
+        save_str = 'dirty_nxy'
     elif args.skirt_nz:
         nbinzs = ['005','010','030','100','200','400']
         moddisplaynames = ['SK (Nz='+nbinz+')' for nbinz in reversed(nbinzs)]

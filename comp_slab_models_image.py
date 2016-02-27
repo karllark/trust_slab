@@ -247,6 +247,10 @@ def plot_imagegrid(modnames, moddisplaynames, wave, tau, angle,
                      cut2_offset, cut2_stddev, cut2_maxabsdev])
         
 
+    # min y value to plot for percentage plots
+    # keeps the % difference plot from going to *very* small numbers
+    min_yval = 1e-2
+
     # setup for the first cut plot
     ax[n_files].set_yscale('log')
     cut1_minmax_x_vals[0] -= 0.1*(cut1_minmax_x_vals[1] -
@@ -271,6 +275,8 @@ def plot_imagegrid(modnames, moddisplaynames, wave, tau, angle,
     cur_ylim = ax[n_files+1].get_ylim()
     new_ylim = [max([cur_ylim[0],-1.0*max_plot_diff]),
                 min([cur_ylim[1],max_plot_diff])]
+    new_ylim = [min([new_ylim[0], -min_yval]),
+                max([new_ylim[1], min_yval])]
     ax[n_files+1].set_ylim(new_ylim)
     if n_files >= 6:
         ax[n_files+1].legend(loc=1,fontsize=fontsize)
@@ -296,9 +302,11 @@ def plot_imagegrid(modnames, moddisplaynames, wave, tau, angle,
 
     ax[n_files+3].set_ylabel('% difference')
     ax[n_files+3].set_xlim(cut2_minmax_x_vals)
-    cur_ylim = ax[n_files+1].get_ylim()
+    cur_ylim = ax[n_files+3].get_ylim()
     new_ylim = [max([cur_ylim[0],-1.0*max_plot_diff]),
                 min([cur_ylim[1],max_plot_diff])]
+    new_ylim = [min([new_ylim[0], -min_yval]),
+                max([new_ylim[1], min_yval])]
     ax[n_files+3].set_ylim(new_ylim)
     if n_files >= 6:
         ax[n_files+3].legend(loc=1,fontsize=fontsize)
