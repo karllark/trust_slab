@@ -131,7 +131,7 @@ if __name__ == "__main__":
     # models to display
     plot_all = False 
     if args.dirty_nz:
-        nbinzs = ['1','2','5','10','20','50','100','200','400']
+        nbinzs = ['1','2','5','10','20','50','100','200']
         moddisplaynames = ['DI (Nz='+nbinz+')' for nbinz in reversed(nbinzs)]
         modnames = ['dirty_nbinz_'+nbinz for nbinz in reversed(nbinzs)]
         imodnames = ['dirty_nbinz/' + modname + '_slab_eff'
@@ -156,7 +156,7 @@ if __name__ == "__main__":
         scomp = 0
         save_str = 'skirt_nz'
     elif args.dirty_nphot:
-        nphots = ['1e5','3.2e5','1e6','3.2e6','1e7','3.2e7','1e8']
+        nphots = ['3.2e5','1e6','3.2e6','1e7','3.2e7','1e8']
         moddisplaynames = ['DI (N='+nphot+')' for nphot in reversed(nphots)]
         modnames = ['dirty_nphot_'+nphot for nphot in reversed(nphots)]
         imodnames = ['dirty_nphot/' + modname + '_slab_eff'
@@ -232,8 +232,8 @@ if __name__ == "__main__":
         save_str = 'dirty_gtype'
         plot_all = True
     elif args.equ:
-        moddisplaynames = ['CRT','DART-ray','DIRTY','SKIRT']
-        modnames = ['crt','dartr','dirty','skirt']
+        moddisplaynames = ['CRT','DART-ray','DIRTY','SKIRT','TRADING']
+        modnames = ['crt','dartr','dirty','skirt','tradi']
         imodnames = [modname + '/' + modname + '_slab_equ'
                      for modname in modnames]
         scomp = -1

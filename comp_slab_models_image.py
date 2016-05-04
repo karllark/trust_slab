@@ -20,6 +20,8 @@ import matplotlib as mpl
 from astropy.io import fits
 from astropy.table import Table
 
+import cubehelix
+
 def plot_imagegrid(modnames, moddisplaynames, wave, tau, angle,
                    comp_index=-2, max_plot_diff=100.0, save_str='',
                    save_eps=False, save_png=False, save_pdf=False):
@@ -63,9 +65,12 @@ def plot_imagegrid(modnames, moddisplaynames, wave, tau, angle,
     fontsize = 12
 
     # cut info
-    cut1 = np.array([90,110])
-    cut2 = np.array([80,100])
+    cut1 = np.array([95,115])
+    cut2 = np.array([70,90])
     
+    # value to split the legend onto the next plot
+    legsplitval = 7
+
     # decide the number of columns for the images
     nrows = 4
     n_image_col = 2
@@ -182,7 +187,7 @@ def plot_imagegrid(modnames, moddisplaynames, wave, tau, angle,
                                             np.min(cut1_plot_y[gindxs2])])
             cut1_minmax_y_vals[1] = np.max([cut1_minmax_y_vals[1],
                                             np.max(cut1_plot_y[gindxs2])])
-            if i < 6:
+            if i < legsplitval:
                 tname = displaynames[i]
             else:
                 tname = None
@@ -191,7 +196,7 @@ def plot_imagegrid(modnames, moddisplaynames, wave, tau, angle,
 
             # percent difference plot for first cut
             gindxs, = np.where((cut1_plot_y > 0) & (cut1_plot_y_all > 0))
-            if i >= 6:
+            if i >= legsplitval:
                 tname = displaynames[i]
             else:
                 tname = None
@@ -218,7 +223,7 @@ def plot_imagegrid(modnames, moddisplaynames, wave, tau, angle,
                                             np.min(cut2_plot_y[gindxs2])])
             cut2_minmax_y_vals[1] = np.max([cut2_minmax_y_vals[1],
                                             np.max(cut2_plot_y[gindxs2])])
-            if i < 6:
+            if i < legsplitval:
                 tname = displaynames[i]
             else:
                 tname = None
@@ -227,7 +232,7 @@ def plot_imagegrid(modnames, moddisplaynames, wave, tau, angle,
         
             # percent difference plot for first cut
             gindxs, = np.where((cut2_plot_y > 0) & (cut2_plot_y_all > 0))
-            if i >= 6:
+            if i >= legsplitval:
                 tname = displaynames[i]
             else:
                 tname = None
@@ -278,7 +283,7 @@ def plot_imagegrid(modnames, moddisplaynames, wave, tau, angle,
     new_ylim = [min([new_ylim[0], -min_yval]),
                 max([new_ylim[1], min_yval])]
     ax[n_files+1].set_ylim(new_ylim)
-    if n_files >= 6:
+    if n_files > legsplitval:
         ax[n_files+1].legend(loc=1,fontsize=fontsize)
 
     # setup for the second cut plot
@@ -308,19 +313,32 @@ def plot_imagegrid(modnames, moddisplaynames, wave, tau, angle,
     new_ylim = [min([new_ylim[0], -min_yval]),
                 max([new_ylim[1], min_yval])]
     ax[n_files+3].set_ylim(new_ylim)
-    if n_files >= 6:
+    if n_files > legsplitval:
         ax[n_files+3].legend(loc=1,fontsize=fontsize)
 
     #mpl.cm.register_cmap(name='cubehelix3',
-    #                     data=mpl._cm.cubehelix(gamma=1.0, s=1.0, r=2.0, h=2.0))
+    #                     data=mpl._cm.cubehelix(gamma=1.0, start=0.0, rot=1.0, hue=320.))
+    # Heddy's nice cubehelix using the "cubehelix" pacakge (not built into matplotlib
+    custcmap = cubehelix.cmap(reverse = False, rot=1, start=0, startHue=320, sat = 2)
 
     # now display the images    
+    cutpwidth = 4
     for i in range(n_files):
+        # add in the image cut boxes
+        if i == 0:
+            all_images[:,cut1[0]-cutpwidth:cut1[0],i] = np.amax(all_images[:,:,i])
+            all_images[:,cut1[1]:cut1[1]+cutpwidth,i] = np.amax(all_images[:,:,i])
+
+        if i == 1:
+            all_images[cut2[0]-cutpwidth:cut2[0],:,i] = np.amax(all_images[:,:,i])
+            all_images[cut2[1]:cut2[1]+cutpwidth,:,i] = np.amax(all_images[:,:,i])
+
         # display images
         cur_cax = ax[i].imshow(all_images[:,:,i],
                                norm=LogNorm(vmin=cut1_minmax_y_vals[0],
                                             vmax=cut1_minmax_y_vals[1]),
-                               origin='lower')#,
+                               origin='lower',
+                               cmap=custcmap)
 #                               cmap=pyplot.get_cmap('cubehelix3'))
         ax[i].set_title(displaynames[i],fontsize=fontsize)
         ax[i].get_xaxis().set_visible(False)

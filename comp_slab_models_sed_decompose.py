@@ -58,6 +58,9 @@ def plot_decompose_sed(modnames, moddisplaynames, tau, angle,
                   'Direct Dust Emission','Scattered Dust Emission',
                   'Transparent Stellar']
 
+    # value to split the legend onto the next plot
+    legsplitval = 7
+
     # setup figure
     fig, ax = pyplot.subplots(figsize=(15,10))
 
@@ -97,10 +100,12 @@ def plot_decompose_sed(modnames, moddisplaynames, tau, angle,
             gindxs, = np.where(all_data[j,comp_indxs[k],:] > 0)
             if len(gindxs) >= 2:
                 ave_sed_comps[j,k] = np.median(all_data[j,comp_indxs[k],gindxs])
+                ave_sed_comps_npts[j,k] = len(gindxs)
                 #print(all_data[j,k,gindxs])
                 #print(ave_sed_comps[j,k])
             elif len(gindxs) >= 1:
                 ave_sed_comps[j,k] = all_data[j,comp_indxs[k],gindxs[0]]
+                ave_sed_comps_npts[j,k] = 1
 
     # if single comp is set to a non-negative value, then use that model as
     #   the comparison instead of the average
@@ -119,20 +124,23 @@ def plot_decompose_sed(modnames, moddisplaynames, tau, angle,
             if plot_all:
                 for z in range(n_files):
                     ax[0].plot(all_data[gindxs,0,0],
-                               all_data[gindxs,comp_indxs[k],z],total_symtype[k])
+                               all_data[gindxs,comp_indxs[k],z],
+                               total_symtype[k])
 
         # plot the percentage difference for each model from the average
         for i in range(n_files):
+            # only plot for wavelengths where all the model results exist
             gindxs, = np.where((all_data[:,comp_indxs[k],i] > 0.0) &
-                               (ave_sed_comps[:,k] > 0.0))
+                               (ave_sed_comps_npts[:,k] >=
+                                (max(ave_sed_comps_npts[:,k]))))
             if len(gindxs) > 0:
                 y = 100.*(all_data[gindxs,comp_indxs[k],i] -
                           ave_sed_comps[gindxs,k])/ave_sed_comps[gindxs,k]
-                if (comp_indxs[k] == 4) & (i < 6):
+                if (comp_indxs[k] == 4) & (i < legsplitval):
                     # needed for to have a good legend
                     ax[k+1].plot(all_data[gindxs,0,i], y, symtype[fileindxs[i]],
                                  label=displaynames[i])
-                if (comp_indxs[k] == 5) & (i >= 6):
+                if (comp_indxs[k] == 5) & (i >= legsplitval):
                     ax[k+1].plot(all_data[gindxs,0,i], y, symtype[fileindxs[i]],
                                  label=displaynames[i])
                 else:
@@ -184,7 +192,7 @@ def plot_decompose_sed(modnames, moddisplaynames, tau, angle,
     # enable the two needed legends
     ax[0].legend(loc=3,fontsize=fontsize)
     ax[4].legend(loc=2,fontsize=fontsize)
-    if n_files > 6:
+    if n_files > legsplitval:
         ax[5].legend(loc=2,fontsize=fontsize)
 
     # optimize the figure layout
