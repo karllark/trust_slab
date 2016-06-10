@@ -72,8 +72,10 @@ if __name__ == "__main__":
         run_tag = 'dirty_nphot'
         kxlabel = r'$n_p$'
 
-    for tau in taus:
-        for wave in waves:
+    col = ['r','b','g','c']
+    lstyle = ['-','--']
+    for m, tau in enumerate(taus):
+        for n, wave in enumerate(waves):
             tab_name =  'slab_t' + tau + '_i' + angle + '_w' + wave + \
                         '_image_comp_' + run_tag
             
@@ -89,6 +91,7 @@ if __name__ == "__main__":
 
             nvals = len(mvals)
             ax.plot(mvals[1:nvals], cur_table['cut1_stddev'][1:nvals], 
+                    col[n]+lstyle[m],
                     label=r'$\tau = ' + tau + '; \lambda = ' + wave + '$')
             
     min_val = min(mvals[1:nvals])
@@ -102,7 +105,7 @@ if __name__ == "__main__":
     ax.set_ylim(0.5e-1,1e2)
     ax.set_ylabel(r'$\sigma$ [%]')
     ax.set_xlabel(kxlabel)
-    ax.legend()
+    ax.legend(loc=3)
 
     fig.tight_layout()
 

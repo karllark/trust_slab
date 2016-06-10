@@ -48,7 +48,6 @@ def plot_indiv_comp(ax, tau, good_angles, tagstr, dispstr, compname):
     ax.set_ylabel(r'$\sigma$ [%]')
     ax.set_xlabel('angle')
 
-    ax.legend(loc=0)
 
 def plot_full_comp(compname, dcompnames, args, good_angles):
 
@@ -70,6 +69,8 @@ def plot_full_comp(compname, dcompnames, args, good_angles):
     for k, cur_ax in enumerate(tax):
         plot_indiv_comp(cur_ax, taus[k], good_angles, tagstr, dispstr, 
                         dcompnames[compname])
+
+    tax[0].legend(loc=2, ncol=2)
 
     fig.tight_layout()
 

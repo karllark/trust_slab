@@ -16,8 +16,10 @@ from astropy.table import Table
 
 def plot_indiv_comp(ax, taus, angles, compname):
 
-    for tau in taus:
-        for angle in angles:
+    col = ['r','b','g','c']
+    lstyle = ['-','--']
+    for m, tau in enumerate(taus):
+        for n, angle in enumerate(angles):
             tab_name =  'slab_t' + tau + '_i' + angle + \
                 '_decomposed_sed_comp_scomp0_' + run_tag
             
@@ -35,6 +37,7 @@ def plot_indiv_comp(ax, taus, angles, compname):
 
             nvals = len(mvals)
             ax.plot(mvals[1:nvals], cur_table['stddev'][indxs[1:nvals]], 
+                    col[n]+lstyle[m],
                     label=r'$\tau = ' + tau + '; i = ' + angle + '$')
             
     min_val = min(mvals[1:nvals])
@@ -49,7 +52,8 @@ def plot_indiv_comp(ax, taus, angles, compname):
     #ax.set_ylim(0.5e-1,1e2)
     ax.set_ylabel(r'$\sigma$ [%]')
     ax.set_xlabel(kxlabel)
-    ax.legend()
+    if compname == 'Direct Dust Emission':
+        ax.legend(loc=3)
 
 
 if __name__ == "__main__":
@@ -117,8 +121,8 @@ if __name__ == "__main__":
     tax = [ax[0,0],ax[0,1],ax[1,0],ax[1,1]]
     for k, cur_compname in enumerate(['total','dscat','demis','demisscat']):
 
-        plot_indiv_comp(tax[k], taus, angles, dcompnames[cur_compname])
-
+        plot_indiv_comp(tax[k], taus, angles, dcompnames[cur_compname],
+                        )
     fig.tight_layout()
 
     save_name = 'slab_converge_sed_' + run_tag
