@@ -15,6 +15,7 @@ import matplotlib.pyplot as pyplot
 import matplotlib.gridspec as gridspec
 
 from astropy.table import Table
+from astropy.stats import sigma_clip
 
 def plot_decompose_sed(modnames, moddisplaynames, tau, angle,
                        single_comp=-1, max_plot_diff=10.0, save_str='',
@@ -100,6 +101,7 @@ def plot_decompose_sed(modnames, moddisplaynames, tau, angle,
             gindxs, = np.where(all_data[j,comp_indxs[k],:] > 0)
             if len(gindxs) >= 2:
                 ave_sed_comps[j,k] = np.median(all_data[j,comp_indxs[k],gindxs])
+                #ave_sed_comps[j,k] = np.average(sigma_clip(all_data[j,comp_indxs[k],gindxs]))
                 ave_sed_comps_npts[j,k] = len(gindxs)
                 #print(all_data[j,k,gindxs])
                 #print(ave_sed_comps[j,k])
@@ -148,7 +150,7 @@ def plot_decompose_sed(modnames, moddisplaynames, tau, angle,
 
                 # compute statistics and output
                 ave_offset = np.average(y)
-                stddev = np.std(y,ddof=1)
+                stddev = np.average(abs(y))
                 maxabsdev = np.amax(abs(y))
                 tab.add_row([label_text[k], k, displaynames[i], i,
                              ave_offset, stddev, maxabsdev])
@@ -206,7 +208,7 @@ def plot_decompose_sed(modnames, moddisplaynames, tau, angle,
         save_name += '_' + save_str
 
     # save the table of the offsets and standard deviations
-    tab.write(save_name+'.dat', format='ascii.commented_header')
+    tab.write('dat/'+save_name+'.dat', format='ascii.commented_header', overwrite=True)
         
     # display the plot
     if save_png:

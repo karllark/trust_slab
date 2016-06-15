@@ -14,6 +14,46 @@ import matplotlib as mpl
 
 from astropy.table import Table
 
+def plot_converge_slice(ax, taus, waves, angle,
+                        run_tag, kxlabel,
+                        fontsize=16):
+
+    col = ['r','b','g','c']
+    lstyle = ['-','--']
+    for m, tau in enumerate(taus):
+        for n, wave in enumerate(waves):
+            tab_name =  'dat/slab_t' + tau + '_i' + angle + '_w' + wave + \
+                        '_image_comp_' + run_tag
+            
+            cur_table = Table.read(tab_name+'.dat',
+                                   format='ascii.commented_header')
+
+            # extract the number of bins from the model name
+            mvals = np.empty((len(cur_table['model'])))
+            for i, cmodel in enumerate(cur_table['model']):
+                eq_pos = cmodel.find('=')
+                pa_pos = cmodel.find(')')
+                mvals[i] = float(cmodel[eq_pos+1:pa_pos])
+
+            nvals = len(mvals)
+            ax.plot(mvals[1:nvals], cur_table['cut1_stddev'][1:nvals], 
+                    col[n]+lstyle[m],
+                    label=r'$\tau_z = ' + tau + '$; $\lambda = ' + wave + '$')
+            
+    min_val = min(mvals[1:nvals])
+    max_val = max(mvals[1:nvals])
+
+    ax.plot([min_val,max_val],[1.0,1.0],'k--')
+    ax.plot([min_val,max_val],[5.0,5.0],'k-.')
+
+    ax.set_xscale('log')    
+    ax.set_yscale('log')    
+    ax.set_ylim(0.5e-1,1e2)
+    ax.set_ylabel(r'$\sigma$ [%]')
+    ax.set_xlabel(kxlabel)
+    #ax.legend(loc=3)
+
+
 if __name__ == "__main__":
 
     good_angles = ['000','090','180']
@@ -72,41 +112,9 @@ if __name__ == "__main__":
         run_tag = 'dirty_nphot'
         kxlabel = r'$n_p$'
 
-    col = ['r','b','g','c']
-    lstyle = ['-','--']
-    for m, tau in enumerate(taus):
-        for n, wave in enumerate(waves):
-            tab_name =  'slab_t' + tau + '_i' + angle + '_w' + wave + \
-                        '_image_comp_' + run_tag
-            
-            cur_table = Table.read(tab_name+'.dat',
-                                   format='ascii.commented_header')
+    plot_converge_slice(ax, taus, waves, angle, run_tag, kxlabel)
 
-            # extract the number of bins from the model name
-            mvals = np.empty((len(cur_table['model'])))
-            for i, cmodel in enumerate(cur_table['model']):
-                eq_pos = cmodel.find('=')
-                pa_pos = cmodel.find(')')
-                mvals[i] = float(cmodel[eq_pos+1:pa_pos])
-
-            nvals = len(mvals)
-            ax.plot(mvals[1:nvals], cur_table['cut1_stddev'][1:nvals], 
-                    col[n]+lstyle[m],
-                    label=r'$\tau = ' + tau + '; \lambda = ' + wave + '$')
-            
-    min_val = min(mvals[1:nvals])
-    max_val = max(mvals[1:nvals])
-
-    ax.plot([min_val,max_val],[1.0,1.0],'k--')
-    ax.plot([min_val,max_val],[5.0,5.0],'k-.')
-
-    ax.set_xscale('log')    
-    ax.set_yscale('log')    
-    ax.set_ylim(0.5e-1,1e2)
-    ax.set_ylabel(r'$\sigma$ [%]')
-    ax.set_xlabel(kxlabel)
     ax.legend(loc=3)
-
     fig.tight_layout()
 
     save_name = 'slab_converge_' + run_tag + '_i' + angle

@@ -156,7 +156,7 @@ if __name__ == "__main__":
         scomp = 0
         save_str = 'skirt_nz'
     elif args.dirty_nphot:
-        nphots = ['3.2e5','1e6','3.2e6','1e7','3.2e7','1e8']
+        nphots = ['3.2e5','1e6','3.2e6','1e7','3.2e7','1e8','3.2e8']
         moddisplaynames = ['DI (N='+nphot+')' for nphot in reversed(nphots)]
         modnames = ['dirty_nphot_'+nphot for nphot in reversed(nphots)]
         imodnames = ['dirty_nphot/' + modname + '_slab_eff'
@@ -200,13 +200,13 @@ if __name__ == "__main__":
         scomp = 2
         save_str = 'dirty_forcebiasxi'
     elif args.dirty_newforcebiasxi:
-        xis = ['0.0','0.25','0.5','0.75','1.0']
+        xis = ['0.0','0.05','0.1','0.25','0.5','0.75','0.9','0.95','1.0']
         moddisplaynames = ['DI (xis=' + xi + ')' for xi in reversed(xis)]
         modnames = ['dirty_newforcebiasxi_' + xi for xi in reversed(xis)]
         imodnames = ['dirty_newforcebiasxi/' + modname + '_slab_eff'
                      for modname in modnames]
-        scomp = 2
-        save_str = 'dirty_newforcebiasxi'
+        scomp = 4
+        save_str = 'dirty_emitbiasxi'
     elif args.dirty_biasxi:
         xis = ['0.0','0.05','0.10','0.15','0.25']
         moddisplaynames = ['DI (xis=' + xi + ')' for xi in reversed(xis)]
@@ -216,12 +216,12 @@ if __name__ == "__main__":
         scomp = 2
         save_str = 'dirty_biasxi'
     elif args.dirty_emitbiasxi:
-        xis = ['0.0','0.1','0.25','0.5','0.75','1.0']
+        xis = ['0.0','0.05','0.1','0.25','0.5','0.75','0.9','0.95','1.0']
         moddisplaynames = ['DI (exis=' + xi + ')' for xi in xis]
         modnames = ['dirty_emitbiasxi_' + xi for xi in xis]
         imodnames = ['dirty_emitbiasxi/' + modname + '_slab_eff'
                      for modname in modnames]
-        scomp = 0
+        scomp = 4
         save_str = 'dirty_forcebiasxi'
     elif args.dirty_gtype:
         gtypes = ['equ','eff']

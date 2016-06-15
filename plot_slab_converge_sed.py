@@ -14,13 +14,14 @@ import matplotlib as mpl
 
 from astropy.table import Table
 
-def plot_indiv_comp(ax, taus, angles, compname):
+def plot_indiv_comp(ax, taus, angles, compname, run_tag, kxlabel,
+                    fontsize=16):
 
     col = ['r','b','g','c']
     lstyle = ['-','--']
     for m, tau in enumerate(taus):
         for n, angle in enumerate(angles):
-            tab_name =  'slab_t' + tau + '_i' + angle + \
+            tab_name =  'dat/slab_t' + tau + '_i' + angle + \
                 '_decomposed_sed_comp_scomp0_' + run_tag
             
             cur_table = Table.read(tab_name+'.dat',
@@ -38,7 +39,8 @@ def plot_indiv_comp(ax, taus, angles, compname):
             nvals = len(mvals)
             ax.plot(mvals[1:nvals], cur_table['stddev'][indxs[1:nvals]], 
                     col[n]+lstyle[m],
-                    label=r'$\tau = ' + tau + '; i = ' + angle + '$')
+                    label=r'$\tau_z = ' + tau + r'$; $\theta = ' + 
+                    angle + r'^\circ$')
             
     min_val = min(mvals[1:nvals])
     max_val = max(mvals[1:nvals])
@@ -122,7 +124,7 @@ if __name__ == "__main__":
     for k, cur_compname in enumerate(['total','dscat','demis','demisscat']):
 
         plot_indiv_comp(tax[k], taus, angles, dcompnames[cur_compname],
-                        )
+                        run_tag, kxlabel)
     fig.tight_layout()
 
     save_name = 'slab_converge_sed_' + run_tag

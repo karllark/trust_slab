@@ -207,7 +207,7 @@ def plot_imagegrid(modnames, moddisplaynames, wave, tau, angle,
 
             # quantitative info to save
             cut1_offset = np.average(y)
-            cut1_stddev = np.std(y,ddof=1)
+            cut1_stddev = np.average(abs(y))
             cut1_maxabsdev = np.amax(abs(y))
             
         # second cut (x)
@@ -244,7 +244,7 @@ def plot_imagegrid(modnames, moddisplaynames, wave, tau, angle,
 
             # quantitative info to save
             cut2_offset = np.average(y)
-            cut2_stddev = np.std(y,ddof=1)
+            cut2_stddev = np.average(abs(y))
             cut2_maxabsdev = np.amax(abs(y))
 
         tab.add_row([displaynames[i], i,
@@ -319,7 +319,8 @@ def plot_imagegrid(modnames, moddisplaynames, wave, tau, angle,
     #mpl.cm.register_cmap(name='cubehelix3',
     #                     data=mpl._cm.cubehelix(gamma=1.0, start=0.0, rot=1.0, hue=320.))
     # Heddy's nice cubehelix using the "cubehelix" pacakge (not built into matplotlib
-    custcmap = cubehelix.cmap(reverse = False, rot=1, start=0, startHue=320, sat = 2)
+    custcmap = cubehelix.cmap(reverse = False, rot=1, start=0, 
+                              startHue=320, sat = 2)
 
     # now display the images    
     cutpwidth = 4
@@ -361,7 +362,7 @@ def plot_imagegrid(modnames, moddisplaynames, wave, tau, angle,
         save_name += '_' + save_str
     
     # save the table of the offsets and standard deviations
-    tab.write(save_name+'.dat', format='ascii.commented_header')
+    tab.write('dat/'+save_name+'.dat', format='ascii.commented_header', overwrite=True)
 
     if save_png:
         fig.savefig(save_name+'.png')
