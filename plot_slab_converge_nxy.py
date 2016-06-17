@@ -101,7 +101,7 @@ if __name__ == "__main__":
 
         timage = np.squeeze(fits.getdata(cfile))
 
-        timage = timage[9:255,45:257]
+        timage = timage[45:255,45:255]
 
         cur_cax = ax[i+2].imshow(timage,
                                  norm=LogNorm(vmin=minmax_y_vals[0],

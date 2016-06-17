@@ -70,7 +70,8 @@ if __name__ == "__main__":
             gindxs, = np.where(data[:,1] > 0.0)
             ax.plot(data[gindxs,0],data[gindxs,1],
                     coltype[j]+symtype[k],
-                    label=r'$\tau_z = ' + tau + r';$ $\theta = ' + angles[k] + '$')
+                    label=r'$\tau_z = ' + tau + r';$ $\theta = ' + \
+                        angles[k] + '$')
 
     ax.set_xscale('log')
     ax.set_yscale('log')
@@ -79,25 +80,34 @@ if __name__ == "__main__":
     ax.set_xlim([0.08,1.1e3])
     ax.set_ylim([1e-3,1.1e3])
 
+    # Create two custom legends (more compact)
 
-    handles, labels = ax.get_legend_handles_labels()
-    display = (0,1,2)
-    
-    #Create custom artists
-
-    leg = ax.legend([plt.Line2D((0,1),(0,0), color='g', linestyle='-'),
+    # taus
+    leg1 = ax.legend([plt.Line2D((0,1),(0,0), color='r', linestyle='-'),
+                     plt.Line2D((0,1),(0,0), color='m', linestyle='-'),
+                     plt.Line2D((0,1),(0,0), color='g', linestyle='-'),
                      plt.Line2D((0,1),(0,0), color='b', linestyle='-')],
-                    [r'$\tau = 1e-1$',
-                     r'$\tau = 1e-2$'])
+                    [r'$\tau_z = 1e1$',
+                     r'$\tau_z = 1e0$',
+                     r'$\tau_z = 1e-1$',
+                     r'$\tau_z = 1e-2$'],
+                    fontsize=0.9*fontsize,
+                    loc='upper left')
+    leg1.get_frame().set_linewidth(2)
 
-    leg.get_frame().set_linewidth(2)
+    # Add the legend manually to the current Axes.
+    plt.gca().add_artist(leg1)
 
-    #Create legend from custom artist/label lists
-    #ax.legend([handle for i,handle in enumerate(handles) if i in display]+[simArtist,anyArtist],
-    #          [label for i,label in enumerate(labels) if i in display]+['Simulation', 'Analytic'])
-
-    #leg = ax.legend(loc=2,fontsize=0.7*fontsize,ncol=2)
-
+    # angles
+    leg2 = ax.legend([plt.Line2D((0,1),(0,0), color='k', linestyle='-'),
+                     plt.Line2D((0,1),(0,0), color='k', linestyle='--'),
+                     plt.Line2D((0,1),(0,0), color='k', linestyle='-.')],
+                    [r'$\theta = 0^\circ$',
+                     r'$\theta = 90^\circ$',
+                     r'$\theta = 180^\circ$'],
+                    fontsize=0.9*fontsize,
+                    loc='upper center')
+    leg2.get_frame().set_linewidth(2)
 
     # optimize the figure layout
     plt.tight_layout()

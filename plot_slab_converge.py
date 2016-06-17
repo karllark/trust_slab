@@ -18,7 +18,7 @@ def plot_converge_slice(ax, taus, waves, angle,
                         run_tag, kxlabel,
                         fontsize=16):
 
-    col = ['r','b','g','c']
+    col = ['c','m','y','k']
     lstyle = ['-','--']
     for m, tau in enumerate(taus):
         for n, wave in enumerate(waves):
