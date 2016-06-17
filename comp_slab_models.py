@@ -232,15 +232,17 @@ if __name__ == "__main__":
         save_str = 'dirty_gtype'
         plot_all = True
     elif args.equ:
-        moddisplaynames = ['CRT','DART-ray','DIRTY','SKIRT','TRADING']
-        modnames = ['crt','dartr','dirty','skirt','tradi']
+        moddisplaynames = ['CRT','DART-ray','DIRTY','Hyperion','SKIRT',
+                           'TRADING','SOC']
+        modnames = ['crt','dartr','dirty','hyper','skirt','tradi','SOC']
         imodnames = [modname + '/' + modname + '_slab_equ'
                      for modname in modnames]
         scomp = -1
         save_str = 'equ'
     elif args.sto:
-        moddisplaynames = ['CRT','DIRTY','SKIRT','SOC']
-        modnames = ['crt','dirty','skirt','SOC']
+        moddisplaynames = ['CRT','DART-ray','DIRTY','Hyperion','SKIRT',
+                           'TRADING','SOC']
+        modnames = ['crt','dartr','dirty','hyper','skirt','tradi','SOC']
         imodnames = [modname + '/' + modname + '_slab_sto'
                      for modname in modnames]
         scomp = -1

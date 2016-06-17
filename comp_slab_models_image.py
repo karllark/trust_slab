@@ -26,6 +26,17 @@ def plot_imagegrid(modnames, moddisplaynames, wave, tau, angle,
                    comp_index=-2, max_plot_diff=100.0, save_str='',
                    save_eps=False, save_png=False, save_pdf=False):
 
+    # setup the plots
+    fontsize = 14
+    font = {'size'   : fontsize}
+
+    mpl.rc('font', **font)
+
+    mpl.rc('lines', linewidth=2)
+    mpl.rc('axes', linewidth=2)
+    mpl.rc('xtick.major', width=2)
+    mpl.rc('ytick.major', width=2)
+
     # generate the filename
     ifilenames = [modname + '_t' + tau + '_i' + angle + 'a000_w' +
                   wave + '.fits' for modname in modnames]
@@ -62,7 +73,6 @@ def plot_imagegrid(modnames, moddisplaynames, wave, tau, angle,
         fig_label += ' (eff case)'
     symtype = ['b-','g-','r-','c-','m-','y-','k-','b--','g--','r--','c--',
                'm--','y--','k--']
-    fontsize = 12
 
     # cut info
     cut1 = np.array([95,115])
@@ -206,9 +216,13 @@ def plot_imagegrid(modnames, moddisplaynames, wave, tau, angle,
                                symtype[fileindxs[i]],label=tname)
 
             # quantitative info to save
-            cut1_offset = np.average(y)
-            cut1_stddev = np.average(abs(y))
-            cut1_maxabsdev = np.amax(abs(y))
+            #  remove the point closest to the star for the theta=90 case
+            #  some models assume infinite distance, some assume the correct
+            #  finite distance
+            comp_y = y[0:len(y)-1]
+            cut1_offset = np.average(comp_y)
+            cut1_stddev = np.average(abs(comp_y))
+            cut1_maxabsdev = np.amax(abs(comp_y))
             
         # second cut (x)
         cut2_plot_y = np.median(all_images[cut2[0]:cut2[1],:,i],axis=0)
@@ -273,7 +287,8 @@ def plot_imagegrid(modnames, moddisplaynames, wave, tau, angle,
     ax[n_files].set_ylabel('SB [MJy/sr]')
     ax[n_files].set_title('Y slice ($'+str(cut1[0])+' \leq x \leq '+
                           str(cut1[1])+ '$)')
-    ax[n_files].legend(loc=1,fontsize=fontsize)
+    leg = ax[n_files].legend(loc=1,fontsize=fontsize)
+    leg.get_frame().set_linewidth(2)
 
     ax[n_files+1].set_ylabel('% difference')
     ax[n_files+1].set_xlim(cut1_minmax_x_vals)
@@ -284,7 +299,8 @@ def plot_imagegrid(modnames, moddisplaynames, wave, tau, angle,
                 max([new_ylim[1], min_yval])]
     ax[n_files+1].set_ylim(new_ylim)
     if n_files > legsplitval:
-        ax[n_files+1].legend(loc=1,fontsize=fontsize)
+        leg = ax[n_files+1].legend(loc=1,fontsize=fontsize)
+        leg.get_frame().set_linewidth(2)
 
     # setup for the second cut plot
     ax[n_files+2].set_yscale('log')
@@ -303,7 +319,8 @@ def plot_imagegrid(modnames, moddisplaynames, wave, tau, angle,
     ax[n_files+2].set_ylabel('SB [MJy/sr]')
     ax[n_files+2].set_title('X slice ($'+str(cut2[0])+' \leq y \leq '+
                             str(cut2[1])+ '$)')
-    ax[n_files+2].legend(loc=1,fontsize=fontsize)
+    leg = ax[n_files+2].legend(loc=1,fontsize=fontsize)
+    leg.get_frame().set_linewidth(2)
 
     ax[n_files+3].set_ylabel('% difference')
     ax[n_files+3].set_xlim(cut2_minmax_x_vals)
@@ -314,7 +331,8 @@ def plot_imagegrid(modnames, moddisplaynames, wave, tau, angle,
                 max([new_ylim[1], min_yval])]
     ax[n_files+3].set_ylim(new_ylim)
     if n_files > legsplitval:
-        ax[n_files+3].legend(loc=1,fontsize=fontsize)
+        leg = ax[n_files+3].legend(loc=1,fontsize=fontsize)
+        leg.get_frame().set_linewidth(2)
 
     #mpl.cm.register_cmap(name='cubehelix3',
     #                     data=mpl._cm.cubehelix(gamma=1.0, start=0.0, rot=1.0, hue=320.))
@@ -362,7 +380,8 @@ def plot_imagegrid(modnames, moddisplaynames, wave, tau, angle,
         save_name += '_' + save_str
     
     # save the table of the offsets and standard deviations
-    tab.write('dat/'+save_name+'.dat', format='ascii.commented_header', overwrite=True)
+    tab.write('dat/'+save_name+'.dat', format='ascii.commented_header', 
+              overwrite=True)
 
     if save_png:
         fig.savefig(save_name+'.png')

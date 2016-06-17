@@ -14,6 +14,8 @@ import numpy as np
 import matplotlib.pyplot as pyplot
 import matplotlib.gridspec as gridspec
 
+import matplotlib as mpl
+
 from astropy.table import Table
 from astropy.stats import sigma_clip
 
@@ -21,6 +23,17 @@ def plot_decompose_sed(modnames, moddisplaynames, tau, angle,
                        single_comp=-1, max_plot_diff=10.0, save_str='',
                        save_eps=False, save_png=False, save_pdf=False,
                        plot_all=False):
+
+    # setup the plots
+    fontsize = 14
+    font = {'size'   : fontsize}
+
+    mpl.rc('font', **font)
+
+    mpl.rc('lines', linewidth=2)
+    mpl.rc('axes', linewidth=2)
+    mpl.rc('xtick.major', width=2)
+    mpl.rc('ytick.major', width=2)
 
     # generate the filename
     ifilenames = [modname + '_t' + tau + '_i'+ angle + 'a000.sed'
@@ -101,7 +114,8 @@ def plot_decompose_sed(modnames, moddisplaynames, tau, angle,
             gindxs, = np.where(all_data[j,comp_indxs[k],:] > 0)
             if len(gindxs) >= 2:
                 ave_sed_comps[j,k] = np.median(all_data[j,comp_indxs[k],gindxs])
-                #ave_sed_comps[j,k] = np.average(sigma_clip(all_data[j,comp_indxs[k],gindxs]))
+                #ave_sed_comps[j,k] = np.average(sigma_clip(all_data[j,
+                #                                comp_indxs[k],gindxs]))
                 ave_sed_comps_npts[j,k] = len(gindxs)
                 #print(all_data[j,k,gindxs])
                 #print(ave_sed_comps[j,k])
@@ -120,13 +134,24 @@ def plot_decompose_sed(modnames, moddisplaynames, tau, angle,
 
         # plot the SED and components to the big plot
         gindxs, = np.where(ave_sed_comps[:,k] > 0.0)
+        full_gindxs = np.array(gindxs)
+
+        # and impose a limit of 2 microns for the dust emission components
+        # numerical issues with very small fluxes amplified below 2 micron
+        # not important for dust emission given stellar scattered photons
+        #    dominate
+        if label_text[k].find('Emission') > -1:
+            gindxs2, = np.where(all_data[gindxs,0,0] > 2.0)
+            if len(gindxs2) > 0:
+                gindxs = gindxs[gindxs2]
+                
         if len(gindxs) > 0:
-            ax[0].plot(all_data[gindxs,0,0],ave_sed_comps[gindxs,k],
+            ax[0].plot(all_data[full_gindxs,0,0],ave_sed_comps[full_gindxs,k],
                        total_symtype[k],label=label_text[k])
             if plot_all:
                 for z in range(n_files):
-                    ax[0].plot(all_data[gindxs,0,0],
-                               all_data[gindxs,comp_indxs[k],z],
+                    ax[0].plot(all_data[full_gindxs,0,0],
+                               all_data[full_gindxs,comp_indxs[k],z],
                                total_symtype[k])
 
         # plot the percentage difference for each model from the average
@@ -135,6 +160,13 @@ def plot_decompose_sed(modnames, moddisplaynames, tau, angle,
             gindxs, = np.where((all_data[:,comp_indxs[k],i] > 0.0) &
                                (ave_sed_comps_npts[:,k] >=
                                 (max(ave_sed_comps_npts[:,k]))))
+
+            # see above comment on 2 microns cut
+            if label_text[k].find('Emission') > -1:
+                gindxs2, = np.where(all_data[gindxs,0,0] > 2.0)
+                if len(gindxs2) > 0:
+                    gindxs = gindxs[gindxs2]
+
             if len(gindxs) > 0:
                 y = 100.*(all_data[gindxs,comp_indxs[k],i] -
                           ave_sed_comps[gindxs,k])/ave_sed_comps[gindxs,k]
@@ -192,10 +224,13 @@ def plot_decompose_sed(modnames, moddisplaynames, tau, angle,
     ax[0].text(1e-1,ypos,fig_label,fontsize=1.3*fontsize)
 
     # enable the two needed legends
-    ax[0].legend(loc=3,fontsize=fontsize)
-    ax[4].legend(loc=2,fontsize=fontsize)
+    leg = ax[0].legend(loc=3,fontsize=fontsize)
+    leg.get_frame().set_linewidth(2)
+    leg = ax[4].legend(loc=2,fontsize=fontsize)
+    leg.get_frame().set_linewidth(2)
     if n_files > legsplitval:
-        ax[5].legend(loc=2,fontsize=fontsize)
+        leg = ax[5].legend(loc=2,fontsize=fontsize)
+        leg.get_frame().set_linewidth(2)
 
     # optimize the figure layout
     pyplot.tight_layout()
