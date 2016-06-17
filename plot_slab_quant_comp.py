@@ -19,9 +19,10 @@ def plot_indiv_comp(ax, tau, good_angles, tagstr, dispstr, compname):
     n_angles = len(good_angles)
     vinit = False
     for k, angle in enumerate(good_angles):
-        tab_name =  'slab_t' + tau + '_i' + angle + '_decomposed_sed_comp' + tagstr
+        tab_name =  'slab_t' + tau + '_i' + angle + '_decomposed_sed_comp' + \
+            tagstr
             
-        cur_table = Table.read(tab_name+'.dat',
+        cur_table = Table.read('dat/' + tab_name+'.dat',
                                format='ascii.commented_header')
 
         indxs, = np.where(cur_table['component'] == compname)
