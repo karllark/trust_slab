@@ -9,20 +9,14 @@ import os.path
 import argparse
 
 import numpy as np
-import matplotlib.pyplot as pyplot
+import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 import matplotlib as mpl
 
 from astropy.table import Table
 
 def plot_indiv_slice(ax, tau, waves, angles, run_tag, dispstr,
-                     fontsize=16):
-
-    col = ['b','g','r','c','m','y','k']
-
-    models = ['CRT','DART-ray','DIRTY','Hyperion','SKIRT',
-              'TRADING','SOC']
-    dcol = dict(zip(models, col))
+                     dcol, fontsize=16):
 
     sym = ['-','--','-.',':']
     for n, wave in enumerate(waves):
@@ -45,9 +39,9 @@ def plot_indiv_slice(ax, tau, waves, angles, run_tag, dispstr,
             ax.plot(angles, pvals[i,:], dcol[cmodel]+sym[n],
                     label=cmodel + r' $\lambda = ' + wave + '$')
             
-    sones = np.full((len(angles)),1.0)
-    ax.plot(angles,sones,'k--')
-    ax.plot(angles,5.0*sones,'k-.')
+    #sones = np.full((len(angles)),1.0)
+    #ax.plot(angles,sones,'k--')
+    #ax.plot(angles,5.0*sones,'k-.')
 
     ax.set_yscale('log')    
     ax.set_ylim(0.5e-1,1e4)
@@ -56,12 +50,14 @@ def plot_indiv_slice(ax, tau, waves, angles, run_tag, dispstr,
 
     ax.set_title(r'$\tau =$ ' + tau + ' (' + dispstr + ')')
 
+    return mvals
+
     #ax.legend(loc=3)
 
-def plot_slice_all_taus(args, good_angles):
+def plot_slice_all_taus(args, good_angles, waves):
 
     # setup the plot
-    fig, ax = pyplot.subplots(nrows=2,ncols=2,figsize=(15,10))
+    fig, ax = plt.subplots(nrows=2,ncols=2,figsize=(15,8))
     
     taus = ['1e-2','1e-1','1e0','1e1']
     tax = [ax[0,0],ax[0,1],ax[1,0],ax[1,1]]
@@ -75,17 +71,60 @@ def plot_slice_all_taus(args, good_angles):
         dispstr = 'sto'
         tagstr = '_sto'
 
-    waves = ['000.15','151.99']
+    col = ['b','g','r','c','m','y','k']
+    models = ['CRT','DART-ray','DIRTY','Hyperion','SKIRT',
+              'TRADING','SOC']
+    dcol = dict(zip(models, col))
 
     for k, cur_ax in enumerate(tax):
-        plot_indiv_slice(cur_ax, taus[k], waves, good_angles, tagstr, dispstr)
+        pmodels = plot_indiv_slice(cur_ax, taus[k], waves, good_angles, 
+                                   tagstr, dispstr, dcol)
 
-    leg = tax[0].legend(loc=2, ncol=2)
-    leg.get_frame().set_linewidth(2)
+    # Create two custom legends (more compact)
+
+    # models
+    arts = [plt.Line2D((0,1),(0,0), color=dcol[cmodel], linestyle='-') for cmodel in pmodels]
+    leg1 = tax[0].legend(arts,
+                         pmodels,
+                         fontsize=1.25*fontsize,
+                         loc='upper left',
+                         ncol=2)
+    leg1.get_frame().set_linewidth(2)
+
+    # Add the legend manually to the current Axes.
+    plt.gca().add_artist(leg1)
+
+    # waves
+    if args.sto and not args.uvopt:
+        arts = [plt.Line2D((0,1),(0,0), color='k', linestyle='-'),
+                plt.Line2D((0,1),(0,0), color='k', linestyle='--'),
+                plt.Line2D((0,1),(0,0), color='k', linestyle='-.')]
+        labs = [r'$\lambda = '+waves[0]+'$',
+                r'$\lambda = '+waves[1]+'$',
+                r'$\lambda = '+waves[2]+'$']
+    else:
+        arts = [plt.Line2D((0,1),(0,0), color='k', linestyle='-'),
+                plt.Line2D((0,1),(0,0), color='k', linestyle='--')]
+        labs = [r'$\lambda = '+waves[0]+'$',
+                r'$\lambda = '+waves[1]+'$']
+
+    leg2 = tax[0].legend(arts, labs,
+                    fontsize=1.25*fontsize,
+                    loc='upper right')
+    leg2.get_frame().set_linewidth(2)
+
+    #leg = tax[0].legend(loc=2, ncol=2)
+    #leg.get_frame().set_linewidth(2)
 
     fig.tight_layout()
 
     save_name = 'slab_qcomp_image_' + dispstr
+
+    if args.uvopt:
+        save_name += '_uvopt'
+    else:
+        save_name += '_ir'
+
     if args.png:
         fig.savefig(save_name+'.png')
         fig.savefig(save_name+'_small.png',dpi=11)
@@ -94,9 +133,9 @@ def plot_slice_all_taus(args, good_angles):
     elif args.pdf:
         fig.savefig(save_name+'.pdf')
     else:
-        pyplot.show()
+        plt.show()
 
-    pyplot.close(fig)
+    plt.close(fig)
 
 if __name__ == "__main__":
 
@@ -104,6 +143,8 @@ if __name__ == "__main__":
 
     # commandline parser
     parser = argparse.ArgumentParser()
+    parser.add_argument("--uvopt", action="store_true",
+                        help="Display UV/optical results")
     parser.add_argument("--eff", action="store_true",
                         help="Display results for the effective grain " + \
                         "emission approximation [Default]")
@@ -135,4 +176,13 @@ if __name__ == "__main__":
     mpl.rc('xtick.major', width=2)
     mpl.rc('ytick.major', width=2)
 
-    plot_slice_all_taus(args, good_angles)
+    if args.uvopt:
+        waves = ['000.15','000.53']
+    else:
+        if args.sto:
+            waves = ['008.11','023.10','151.99']
+        else:
+            waves = ['035.11','151.99']
+
+
+    plot_slice_all_taus(args, good_angles, waves)

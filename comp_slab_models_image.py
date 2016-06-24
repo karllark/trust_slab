@@ -371,7 +371,7 @@ def plot_imagegrid(modnames, moddisplaynames, wave, tau, angle,
     fig.colorbar(cur_cax, cax=(pyplot.subplot(gs[0:nrows,n_image_col+2])))
     
     # optimize the figure layout
-    gs.tight_layout(fig, rect=[0, 0.03, 1, 0.96])
+    gs.tight_layout(fig, rect=[0, 0.03, 1, 0.96], h_pad=0.25)
 
     # display the plot
     save_name =  'slab_t' + tau + '_i' + angle + '_w' + wave + '_image_comp'

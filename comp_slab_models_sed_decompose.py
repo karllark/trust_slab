@@ -198,11 +198,13 @@ def plot_decompose_sed(modnames, moddisplaynames, tau, angle,
         new_ylim = [max([cur_ylim[0],-1.0*max_plot_diff]),
                     min([cur_ylim[1],max_plot_diff])]
         ax[k+1].set_ylim(new_ylim)
+        if (k != 2) and (k != 4):
+            ax[k+1].get_xaxis().set_ticklabels([])
 
         # label each % difference plot with the component name
         ylimits = ax[k+1].get_ylim()
         ax[k+1].text(7e2,ylimits[0]+0.85*(ylimits[1]-ylimits[0]),label_text[k],
-                     fontsize=fontsize,horizontalalignment='right')
+                     fontsize=1.25*fontsize,horizontalalignment='right')
 
     # x axis label
     ax[3].set_xlabel('wavelength [$\mu$m]')
@@ -216,6 +218,7 @@ def plot_decompose_sed(modnames, moddisplaynames, tau, angle,
     cur_ylim = ax[0].get_ylim()
     new_ylim = [cur_ylim[1]/1e11, cur_ylim[1]]
     ax[0].set_ylim(new_ylim)
+    ax[0].get_xaxis().set_ticklabels([])
 
     # label the big SED plot with the model details
     ylimits = ax[0].get_ylim()
@@ -233,7 +236,7 @@ def plot_decompose_sed(modnames, moddisplaynames, tau, angle,
         leg.get_frame().set_linewidth(2)
 
     # optimize the figure layout
-    pyplot.tight_layout()
+    pyplot.tight_layout(h_pad=-0.25)
 
     # generate the save filename
     save_name =  'slab_t' + tau + '_i' + angle + '_decomposed_sed_comp'

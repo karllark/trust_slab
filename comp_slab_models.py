@@ -74,6 +74,9 @@ if __name__ == "__main__":
     parser.add_argument("--dirty_nphot", action="store_true",
                         help="nphot convergence " + \
                         "(special DIRTY runs) [default=False]")
+    parser.add_argument("--dirty_nphotfast", action="store_true",
+                        help="nphot convergence " + \
+                        "(special DIRTY runs) [default=False]")
     parser.add_argument("--dirty_forcebiasxi", action="store_true",
                         help="value of xi for biasing the forced scattering " + \
                         "(special DIRTY runs) [default=False]")
@@ -163,6 +166,14 @@ if __name__ == "__main__":
                      for modname in modnames]
         scomp = 0
         save_str = 'dirty_nphot' 
+    elif args.dirty_nphotfast:
+        nphots = ['3.2e5','1e6','3.2e6','1e7','3.2e7','1e8','3.2e8']
+        moddisplaynames = ['DI (N='+nphot+')' for nphot in reversed(nphots)]
+        modnames = ['dirty_nphotfast_'+nphot for nphot in reversed(nphots)]
+        imodnames = ['dirty_nphotfast/' + modname + '_slab_eff'
+                     for modname in modnames]
+        scomp = 0
+        save_str = 'dirty_nphotfast' 
     elif args.dirty_mscat:
         mscats = ['1','5','10','20','50','75','100','150','200','300',
                   '500','1000']

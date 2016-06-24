@@ -9,19 +9,13 @@ import os.path
 import argparse
 
 import numpy as np
-import matplotlib.pyplot as pyplot
+import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 import matplotlib as mpl
 
 from astropy.table import Table
 
-def plot_indiv_comp(ax, tau, good_angles, tagstr, dispstr, compname):
-
-    col = ['b','g','r','c','m','y','k']
-
-    models = ['CRT','DART-ray','DIRTY','Hyperion','SKIRT',
-              'TRADING','SOC']
-    dcol = dict(zip(models, col))
+def plot_indiv_comp(ax, tau, good_angles, tagstr, dispstr, compname, dcol):
 
     sym = ['-','--','-.',':']
 
@@ -58,10 +52,11 @@ def plot_indiv_comp(ax, tau, good_angles, tagstr, dispstr, compname):
 
     ax.set_title(r'$\tau =$ ' + tau + ' (' + dispstr + ', ' + compname + ')')
     ax.set_yscale('log')    
-    ax.set_ylim(1e-3,1e2)
+    ax.set_ylim(1e-3,1e3)
     ax.set_ylabel(r'$\sigma$ [%]')
-    ax.set_xlabel('angle')
+    ax.set_xlabel(r'$\theta$')
 
+    return modnames
 
 def plot_full_comp(compname, dcompnames, args, good_angles):
 
@@ -77,7 +72,7 @@ def plot_full_comp(compname, dcompnames, args, good_angles):
     mpl.rc('ytick.major', width=2)
 
     # setup the plot
-    fig, ax = pyplot.subplots(nrows=2,ncols=2,figsize=(15,10))
+    fig, ax = plt.subplots(nrows=2,ncols=2,figsize=(15,8))
     
     taus = ['1e-2','1e-1','1e0','1e1']
     tax = [ax[0,0],ax[0,1],ax[1,0],ax[1,1]]
@@ -91,12 +86,42 @@ def plot_full_comp(compname, dcompnames, args, good_angles):
         dispstr = 'sto'
         tagstr = '_sto'
 
-    for k, cur_ax in enumerate(tax):
-        plot_indiv_comp(cur_ax, taus[k], good_angles, tagstr, dispstr, 
-                        dcompnames[compname])
+    col = ['b','g','r','c','m','y','k']
+    models = ['CRT','DART-ray','DIRTY','Hyperion','SKIRT',
+              'TRADING','SOC']
+    dcol = dict(zip(models, col))
 
-    leg = tax[0].legend(loc=2, ncol=2)
-    leg.get_frame().set_linewidth(2)
+    for k, cur_ax in enumerate(tax):
+        pmodels = plot_indiv_comp(cur_ax, taus[k], good_angles, 
+                                  tagstr, dispstr, 
+                                  dcompnames[compname], dcol)
+        if k == 0:
+            save_pmodels = pmodels
+
+    # models
+    arts = [plt.Line2D((0,1),(0,0), color=dcol[cmodel], linestyle='-') 
+            for cmodel in save_pmodels]
+    leg1 = tax[0].legend(arts,
+                         save_pmodels,
+                         fontsize=1.25*fontsize,
+                         loc='upper left',
+                         ncol=2)
+    leg1.get_frame().set_linewidth(2)
+
+    # Add the legend manually to the current Axes.
+    plt.gca().add_artist(leg1)
+
+    # waves
+    leg2 = tax[0].legend([plt.Line2D((0,1),(0,0), color='k', linestyle='-'),
+                     plt.Line2D((0,1),(0,0), color='k', linestyle='--')],
+                    [r'$\sigma$',
+                     r'maxdev'],
+                    fontsize=1.25*fontsize,
+                    loc='upper right')
+    leg2.get_frame().set_linewidth(2)
+
+    #leg = tax[0].legend(loc=2, ncol=2)
+    #leg.get_frame().set_linewidth(2)
 
     fig.tight_layout()
 
@@ -109,9 +134,9 @@ def plot_full_comp(compname, dcompnames, args, good_angles):
     elif args.pdf:
         fig.savefig(save_name+'.pdf')
     else:
-        pyplot.show()
+        plt.show()
 
-    pyplot.close(fig)
+    plt.close(fig)
 
 if __name__ == "__main__":
 
@@ -126,8 +151,8 @@ if __name__ == "__main__":
                         help="Display results for the equilibrium heating " + \
                         "only approximation")
     parser.add_argument("--sto", action="store_true",
-                        help="Display results for the full heating solution " + \
-                        "(equilibrium + non-equilibrium)")
+                        help="Display results for the full heating solution" + \
+                        " (equilibrium + non-equilibrium)")
     parser.add_argument("--eps", help="Save the plot as an " + \
                         "encapsulated file",
                         action="store_true")
