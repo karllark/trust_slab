@@ -38,6 +38,7 @@ def plot_decompose_sed(modnames, moddisplaynames, tau, angle,
     # generate the filename
     ifilenames = [modname + '_t' + tau + '_i'+ angle + 'a000.sed'
                  for modname in modnames]
+    n_orig_files = len(ifilenames)
 
     # check all the files exisit, adjust if not
     filenames = []

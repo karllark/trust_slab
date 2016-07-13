@@ -50,9 +50,9 @@ def plot_indiv_comp(ax, tau, good_angles, tagstr, dispstr, compname, dcol):
     #ax.plot([min_val,max_val],[1.0,1.0],'k--')
     #ax.plot([min_val,max_val],[5.0,5.0],'k-.')
 
-    ax.set_title(r'$\tau =$ ' + tau + ' (' + dispstr + ', ' + compname + ')')
+    ax.set_title(r'$\tau_z =$ ' + tau + ' (' + dispstr + ', ' + compname + ')')
     ax.set_yscale('log')    
-    ax.set_ylim(1e-3,1e3)
+    ax.set_ylim(1e-3,1e4)
     ax.set_ylabel(r'$\sigma$ [%]')
     ax.set_xlabel(r'$\theta$')
 
@@ -72,10 +72,14 @@ def plot_full_comp(compname, dcompnames, args, good_angles):
     mpl.rc('ytick.major', width=2)
 
     # setup the plot
-    fig, ax = plt.subplots(nrows=2,ncols=2,figsize=(15,8))
     
-    taus = ['1e-2','1e-1','1e0','1e1']
-    tax = [ax[0,0],ax[0,1],ax[1,0],ax[1,1]]
+    #taus = ['1e-2','1e-1','1e0','1e1']
+    #fig, ax = plt.subplots(nrows=1,ncols=2,figsize=(15,8))
+    #tax = [ax[0,0],ax[0,1],ax[1,0],ax[1,1]]
+
+    taus = ['1e0','1e1']
+    fig, ax = plt.subplots(ncols=2,figsize=(15,6))
+    tax = ax
 
     dispstr = 'eff'
     tagstr = ''

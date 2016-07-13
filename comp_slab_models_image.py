@@ -84,7 +84,7 @@ def plot_imagegrid(modnames, moddisplaynames, wave, tau, angle,
     # decide the number of columns for the images
     nrows = 4
     n_image_col = 2
-    dm = divmod(n_files,nrows)
+    dm = divmod(n_orig_files,nrows)
     if dm[0] >= n_image_col & dm[0] > 0:
         n_image_col = dm[0]
         if dm[1] > 0:
@@ -217,11 +217,15 @@ def plot_imagegrid(modnames, moddisplaynames, wave, tau, angle,
 
             # quantitative info to save
             #  remove the point closest to the star for the theta=90 case
-            #  some models assume infinite distance, some assume the correct
-            #  finite distance
-            comp_y = y[0:len(y)-1]
+            #    some models assume infinite distance, some assume the correct
+            #    finite distance
+            #  also remove the point furthest from the star
+            #    some models seem to get this *very* wrong - edge case so
+            #    not really important for the quantitative comparisons
+            comp_y = y[1:len(y)-1]
             cut1_offset = np.average(comp_y)
             cut1_stddev = np.average(abs(comp_y))
+            #cut1_stddev = np.median(abs(comp_y))
             cut1_maxabsdev = np.amax(abs(comp_y))
             
         # second cut (x)

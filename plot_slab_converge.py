@@ -15,7 +15,7 @@ import matplotlib as mpl
 from astropy.table import Table
 
 def plot_converge_slice(ax, taus, waves, angle,
-                        run_tag, kxlabel,
+                        run_tag, kxlabel, plot_xlog=True,
                         fontsize=16):
 
     col = ['c','m','y','k']
@@ -46,7 +46,8 @@ def plot_converge_slice(ax, taus, waves, angle,
     ax.plot([min_val,max_val],[1.0,1.0],'k--')
     ax.plot([min_val,max_val],[5.0,5.0],'k-.')
 
-    ax.set_xscale('log')    
+    if plot_xlog:
+        ax.set_xscale('log')    
     ax.set_yscale('log')    
     ax.set_ylim(0.5e-1,1e2)
     ax.set_ylabel(r'$\sigma$ [%]')
@@ -66,6 +67,12 @@ if __name__ == "__main__":
                         help="number of z bins in slab " + \
                         "(special DIRTY runs) [default=False]")
     parser.add_argument("--dirty_nxy", action="store_true",
+                        help="number of xy bins in slab " + \
+                        "(special DIRTY runs) [default=False]")
+    parser.add_argument("--dirty_biasxi", action="store_true",
+                        help="number of xy bins in slab " + \
+                        "(special DIRTY runs) [default=False]")
+    parser.add_argument("--dirty_emitbiasxi", action="store_true",
                         help="number of xy bins in slab " + \
                         "(special DIRTY runs) [default=False]")
     parser.add_argument("--eps", help="Save the plot as an " + \
@@ -95,6 +102,7 @@ if __name__ == "__main__":
 
     # read in the table data for each
     angle = args.angle
+    plot_xlog = True
     if args.dirty_nz:
         taus = ['1e0','1e1']
         waves = ['035.11','151.99']
@@ -105,6 +113,18 @@ if __name__ == "__main__":
         waves = ['035.11','151.99']
         run_tag = 'dirty_nxy'
         kxlabel = r'$n_{xy}$'
+    elif args.dirty_biasxi:
+        taus = ['1e0','1e1']
+        waves = ['000.15','000.53','035.11','151.99']
+        run_tag = 'dirty_newforcebiasxi'
+        kxlabel = r'$\xi_\mathrm{scat}$'
+        plot_xlog = False
+    elif args.dirty_emitbiasxi:
+        taus = ['1e0','1e1']
+        waves = ['000.15','000.53','035.11','151.99']
+        run_tag = 'dirty_emitbiasxi'
+        kxlabel = r'$\xi_\mathrm{emit}$'
+        plot_xlog = False
     else:  # do the # photons case
         taus = ['1e0','1e1']
         #taus = ['1e0']
@@ -112,9 +132,12 @@ if __name__ == "__main__":
         run_tag = 'dirty_nphot'
         kxlabel = r'$n_p$'
 
-    plot_converge_slice(ax, taus, waves, angle, run_tag, kxlabel)
+    plot_converge_slice(ax, taus, waves, angle, run_tag, kxlabel, plot_xlog=plot_xlog)
 
-    ax.legend(loc=3)
+    if plot_xlog:
+        ax.legend(loc=3)
+    else:
+        ax.legend(loc='upper center')
     fig.tight_layout()
 
     save_name = 'slab_converge_' + run_tag + '_i' + angle

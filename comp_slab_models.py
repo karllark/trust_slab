@@ -217,7 +217,7 @@ if __name__ == "__main__":
         imodnames = ['dirty_newforcebiasxi/' + modname + '_slab_eff'
                      for modname in modnames]
         scomp = 4
-        save_str = 'dirty_emitbiasxi'
+        save_str = 'dirty_newforcebiasxi'
     elif args.dirty_biasxi:
         xis = ['0.0','0.05','0.10','0.15','0.25']
         moddisplaynames = ['DI (xis=' + xi + ')' for xi in reversed(xis)]
@@ -228,12 +228,12 @@ if __name__ == "__main__":
         save_str = 'dirty_biasxi'
     elif args.dirty_emitbiasxi:
         xis = ['0.0','0.05','0.1','0.25','0.5','0.75','0.9','0.95','1.0']
-        moddisplaynames = ['DI (exis=' + xi + ')' for xi in xis]
-        modnames = ['dirty_emitbiasxi_' + xi for xi in xis]
+        moddisplaynames = ['DI (exis=' + xi + ')' for xi in reversed(xis)]
+        modnames = ['dirty_emitbiasxi_' + xi for xi in reversed(xis)]
         imodnames = ['dirty_emitbiasxi/' + modname + '_slab_eff'
                      for modname in modnames]
         scomp = 4
-        save_str = 'dirty_forcebiasxi'
+        save_str = 'dirty_emitbiasxi'
     elif args.dirty_gtype:
         gtypes = ['equ','eff']
         moddisplaynames = ['DI (gtype='+gtype+')' for gtype in gtypes]

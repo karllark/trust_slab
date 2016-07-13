@@ -48,7 +48,7 @@ def plot_indiv_slice(ax, tau, waves, angles, run_tag, dispstr,
     ax.set_ylabel(r'$\sigma$ [%]')
     ax.set_xlabel(r'$\theta$')
 
-    ax.set_title(r'$\tau =$ ' + tau + ' (' + dispstr + ')')
+    ax.set_title(r'$\tau_z =$ ' + tau + ' (' + dispstr + ', Y slice)')
 
     return mvals
 
@@ -57,10 +57,13 @@ def plot_indiv_slice(ax, tau, waves, angles, run_tag, dispstr,
 def plot_slice_all_taus(args, good_angles, waves):
 
     # setup the plot
-    fig, ax = plt.subplots(nrows=2,ncols=2,figsize=(15,8))
-    
-    taus = ['1e-2','1e-1','1e0','1e1']
-    tax = [ax[0,0],ax[0,1],ax[1,0],ax[1,1]]
+    #fig, ax = plt.subplots(nrows=2,ncols=2,figsize=(15,8))
+    #taus = ['1e-2','1e-1','1e0','1e1']
+    #tax = [ax[0,0],ax[0,1],ax[1,0],ax[1,1]]
+
+    taus = ['1e0','1e1']
+    fig, ax = plt.subplots(ncols=2,figsize=(15,6))
+    tax = ax
 
     dispstr = 'eff'
     tagstr = ''
