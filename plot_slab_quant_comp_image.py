@@ -82,13 +82,16 @@ def plot_slice_all_taus(args, good_angles, waves):
     for k, cur_ax in enumerate(tax):
         pmodels = plot_indiv_slice(cur_ax, taus[k], waves, good_angles, 
                                    tagstr, dispstr, dcol)
+        if k == 0:
+            save_pmodels = pmodels
 
     # Create two custom legends (more compact)
 
     # models
-    arts = [plt.Line2D((0,1),(0,0), color=dcol[cmodel], linestyle='-') for cmodel in pmodels]
+    arts = [plt.Line2D((0,1),(0,0), color=dcol[cmodel], linestyle='-') 
+            for cmodel in save_pmodels]
     leg1 = tax[0].legend(arts,
-                         pmodels,
+                         save_pmodels,
                          fontsize=1.25*fontsize,
                          loc='upper left',
                          ncol=2)
