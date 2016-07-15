@@ -68,6 +68,10 @@ if __name__ == "__main__":
     parser.add_argument("--dirty_econs", action="store_true",
                         help="energy conservation convergence " + \
                         "(special DIRTY runs) [default=False]")
+    parser.add_argument("--dirty_maxiter", action="store_true",
+                        help="maximum number of iterations for dust " + 
+                        "emission/self-heating " + \
+                        "(special DIRTY runs) [default=False]")
     parser.add_argument("--dirty_mscat", action="store_true",
                         help="max scat convergence " + \
                         "(special DIRTY runs) [default=False]")
@@ -175,8 +179,7 @@ if __name__ == "__main__":
         scomp = 0
         save_str = 'dirty_nphotfast' 
     elif args.dirty_mscat:
-        mscats = ['1','5','10','20','50','75','100','150','200','300',
-                  '500','1000']
+        mscats = ['1','2','5','10','500']
         moddisplaynames = ['DI (mscat=' + mscat + ')'
                            for mscat in reversed(mscats)]
         modnames = ['dirty_mscat_' + mscat for mscat in reversed(mscats)]
@@ -202,6 +205,15 @@ if __name__ == "__main__":
                      for modname in modnames]
         scomp = 0
         save_str = 'dirty_econs'
+    elif args.dirty_maxiter:
+        miters = ['1','2','3','4','5','10']
+        moddisplaynames = ['DI (miter=' + miter + ')'
+                           for miter in reversed(miters)]
+        modnames = ['dirty_maxiter_' + miter for miter in reversed(miters)]
+        imodnames = ['dirty_maxiter/' + modname + '_slab_eff'
+                     for modname in modnames]
+        scomp = 0
+        save_str = 'dirty_miter'
     elif args.dirty_forcebiasxi:
         xis = ['0.0','0.25','0.5','0.75','1.0']
         moddisplaynames = ['DI (fxis=' + xi + ')' for xi in reversed(xis)]

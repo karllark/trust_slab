@@ -247,7 +247,7 @@ def plot_decompose_sed(modnames, moddisplaynames, tau, angle,
         save_name += '_' + save_str
 
     # save the table of the offsets and standard deviations
-    tab.write('dat/'+save_name+'.dat', format='ascii.commented_header', overwrite=True)
+    tab.write('dat/'+save_name+'.dat', format='ascii.commented_header')
         
     # display the plot
     if save_png:

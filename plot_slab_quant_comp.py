@@ -43,8 +43,8 @@ def plot_indiv_comp(ax, tau, good_angles, tagstr, dispstr, compname, dcol):
     for k, model in enumerate(modnames):
         ax.plot(good_angles, mod_std[:,k], dcol[model]+sym[0], 
                 label=model+r' $\sigma$')
-        ax.plot(good_angles, mod_maxdev[:,k], dcol[model]+sym[1],
-                label=model+r' maxdev')
+        #ax.plot(good_angles, mod_maxdev[:,k], dcol[model]+sym[1],
+        #        label=model+r' maxdev')
             
 
     #ax.plot([min_val,max_val],[1.0,1.0],'k--')
@@ -113,16 +113,16 @@ def plot_full_comp(compname, dcompnames, args, good_angles):
     leg1.get_frame().set_linewidth(2)
 
     # Add the legend manually to the current Axes.
-    plt.gca().add_artist(leg1)
+    #plt.gca().add_artist(leg1)
 
     # waves
-    leg2 = tax[0].legend([plt.Line2D((0,1),(0,0), color='k', linestyle='-'),
-                     plt.Line2D((0,1),(0,0), color='k', linestyle='--')],
-                    [r'$\sigma$',
-                     r'maxdev'],
-                    fontsize=1.25*fontsize,
-                    loc='upper right')
-    leg2.get_frame().set_linewidth(2)
+    #leg2 = tax[0].legend([plt.Line2D((0,1),(0,0), color='k', linestyle='-'),
+    #                 plt.Line2D((0,1),(0,0), color='k', linestyle='--')],
+    #                [r'$\sigma$',
+    #                 r'maxdev'],
+    #                fontsize=1.25*fontsize,
+    #                loc='upper right')
+    #leg2.get_frame().set_linewidth(2)
 
     #leg = tax[0].legend(loc=2, ncol=2)
     #leg.get_frame().set_linewidth(2)

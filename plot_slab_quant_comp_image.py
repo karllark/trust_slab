@@ -98,7 +98,7 @@ def plot_slice_all_taus(args, good_angles, waves):
     leg1.get_frame().set_linewidth(2)
 
     # Add the legend manually to the current Axes.
-    plt.gca().add_artist(leg1)
+    tax[0].add_artist(leg1)
 
     # waves
     if args.sto and not args.uvopt:
@@ -115,8 +115,8 @@ def plot_slice_all_taus(args, good_angles, waves):
                 r'$\lambda = '+waves[1]+'$']
 
     leg2 = tax[0].legend(arts, labs,
-                    fontsize=1.25*fontsize,
-                    loc='upper right')
+                         fontsize=1.25*fontsize,
+                         loc='upper right')
     leg2.get_frame().set_linewidth(2)
 
     #leg = tax[0].legend(loc=2, ncol=2)

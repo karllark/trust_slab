@@ -20,6 +20,8 @@ import matplotlib as mpl
 from astropy.io import fits
 from astropy.table import Table
 
+from astropy.stats import sigma_clip
+
 import cubehelix
 
 def plot_imagegrid(modnames, moddisplaynames, wave, tau, angle,
@@ -223,6 +225,11 @@ def plot_imagegrid(modnames, moddisplaynames, wave, tau, angle,
             #    some models seem to get this *very* wrong - edge case so
             #    not really important for the quantitative comparisons
             comp_y = y[1:len(y)-1]
+            #print(comp_y[0:5])
+            comp_y_sigclip = sigma_clip(comp_y,sigma=10.)
+            good_only = comp_y_sigclip.data[~comp_y_sigclip.mask]
+            #print(good_only[0:5])
+            comp_y = good_only
             cut1_offset = np.average(comp_y)
             cut1_stddev = np.average(abs(comp_y))
             #cut1_stddev = np.median(abs(comp_y))
@@ -384,8 +391,7 @@ def plot_imagegrid(modnames, moddisplaynames, wave, tau, angle,
         save_name += '_' + save_str
     
     # save the table of the offsets and standard deviations
-    tab.write('dat/'+save_name+'.dat', format='ascii.commented_header', 
-              overwrite=True)
+    tab.write('dat/'+save_name+'.dat', format='ascii.commented_header')
 
     if save_png:
         fig.savefig(save_name+'.png')
