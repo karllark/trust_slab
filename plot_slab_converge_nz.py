@@ -73,6 +73,7 @@ if __name__ == "__main__":
     leg = ax[0].legend(fontsize=0.95*fontsize, loc='lower left')
     leg.get_frame().set_linewidth(2)
     ax[0].set_title('Global SED')
+    ax[0].set_xlim(2,100)
 
     plot_converge_slice(ax[1], ['1e0','1e1'], ['035.11','151.99'], '090',
                         'dirty_nz', r'$n_{z}$', fontsize=fontsize)
@@ -81,6 +82,7 @@ if __name__ == "__main__":
     leg = ax[1].legend(fontsize=0.95*fontsize, loc='lower left')
     leg.get_frame().set_linewidth(2)
     ax[1].set_title(r'Y Image Slice, $\theta = 090^\circ$')
+    ax[1].set_xlim(2,100)
     
     modname = 'dirty_nbinz'
     cvals = ['2','5','10','20','50','100']

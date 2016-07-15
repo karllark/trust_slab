@@ -103,7 +103,7 @@ if __name__ == "__main__":
     leg1.get_frame().set_linewidth(2)
 
     # Add the legend manually to the current Axes.
-    plt.gca().add_artist(leg1)
+    ax[0].add_artist(leg1)
 
     # angles
     leg2 = ax[0].legend([plt.Line2D((0,1),(0,0), color='r', linestyle='-'),
@@ -143,16 +143,16 @@ if __name__ == "__main__":
     ax[2].set_title(r'Y Image Slice, $\theta = 090^\circ$')
 
     # taus
-    leg1 = ax[2].legend([plt.Line2D((0,1),(0,0), color='k', linestyle='-'),
+    leg1 = ax[3].legend([plt.Line2D((0,1),(0,0), color='k', linestyle='-'),
                          plt.Line2D((0,1),(0,0), color='k', linestyle='--')],
                         [r'$\tau_z = 1e0$',
                          r'$\tau_z = 1e1$'],
                         fontsize=fontsize,
-                        loc='lower center', bbox_to_anchor=(1.05,0.05))
+                        loc='lower center', bbox_to_anchor=(-0.05,0.05))
     leg1.get_frame().set_linewidth(2)
 
     # Add the legend manually to the current Axes.
-    plt.gca().add_artist(leg1)
+    ax[3].add_artist(leg1)
 
     # angles
     leg2 = ax[2].legend([plt.Line2D((0,1),(0,0), color='c', linestyle='-'),
@@ -225,12 +225,12 @@ if __name__ == "__main__":
                 ax[axval].set_title(r'$N = ' + cval + '$',
                                     fontsize=fontsize)
 
-            if i == 0:
-                ax[axval].set_ylabel(r'$\theta = ' + angle + '^\circ$')
-                ax[axval].yaxis.set_ticklabels([])
-                ax[axval].yaxis.set_ticks_position('none')
-            else:
-                ax[axval].get_yaxis().set_visible(False)
+            #if i == 0:
+                #ax[axval].set_ylabel(r'$\theta = ' + angle + '^\circ$')
+                #ax[axval].yaxis.set_ticklabels([])
+                #ax[axval].yaxis.set_ticks_position('none')
+            #else:
+            ax[axval].get_yaxis().set_visible(False)
 
     wave = '035.11'
 

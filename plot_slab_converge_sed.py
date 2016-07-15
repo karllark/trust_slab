@@ -15,14 +15,14 @@ import matplotlib as mpl
 from astropy.table import Table
 
 def plot_indiv_comp(ax, taus, angles, compname, run_tag, kxlabel, plot_xlog=True,
-                    fontsize=16, compnum='0'):
+                    fontsize=16, compnum='0',show_legend=True):
 
     col = ['r','b','g','c']
     lstyle = ['-','--']
     for m, tau in enumerate(taus):
         for n, angle in enumerate(angles):
             tab_name =  'dat/slab_t' + tau + '_i' + angle + \
-                '_decomposed_sed_comp_scomp'+compnum+'_' + run_tag
+                '_decomposed_sed_comp_scomp'+ compnum +'_' + run_tag
             
             cur_table = Table.read(tab_name+'.dat',
                                    format='ascii.commented_header')
@@ -45,8 +45,9 @@ def plot_indiv_comp(ax, taus, angles, compname, run_tag, kxlabel, plot_xlog=True
     min_val = min(mvals[1:nvals])
     max_val = max(mvals[1:nvals])
 
-    ax.plot([min_val,max_val],[1.0,1.0],'k--')
-    ax.plot([min_val,max_val],[5.0,5.0],'k-.')
+    ax.plot([min_val,max_val],[1.0,1.0],'k:')
+    #ax.plot([min_val,max_val],[5.0,5.0],'k-.')
+    ax.set_xlim(min_val,max_val)
 
     ax.set_title(compname)
     if plot_xlog:
@@ -55,7 +56,7 @@ def plot_indiv_comp(ax, taus, angles, compname, run_tag, kxlabel, plot_xlog=True
     #ax.set_ylim(0.5e-1,1e2)
     ax.set_ylabel(r'$\sigma$ [%]')
     ax.set_xlabel(kxlabel)
-    if compname == 'Direct Dust Emission':
+    if compname == 'Direct Dust Emission' and show_legend:
         if plot_xlog:
             ax.legend(loc=3)
         else:
@@ -73,6 +74,12 @@ if __name__ == "__main__":
                         "(special DIRTY runs) [default=False]")
     parser.add_argument("--dirty_nxy", action="store_true",
                         help="number of xy bins in slab " + \
+                        "(special DIRTY runs) [default=False]")
+    parser.add_argument("--dirty_mscat", action="store_true",
+                        help="maximum number of scatterings " + \
+                        "(special DIRTY runs) [default=False]")
+    parser.add_argument("--dirty_maxiter", action="store_true",
+                        help="maximum number of self-heating interations " + \
                         "(special DIRTY runs) [default=False]")
     parser.add_argument("--dirty_biasxi", action="store_true",
                         help="number of xy bins in slab " + \
@@ -106,8 +113,8 @@ if __name__ == "__main__":
     mpl.rc('ytick.major', width=2)
 
     # read in the table data for each
-    plot_xlog = None
-    compnum = None
+    plot_xlog = True
+    compnum = '0'
     if args.dirty_nz:
         taus = ['1e0','1e1']
         angles = ['090'] 
@@ -119,6 +126,16 @@ if __name__ == "__main__":
         #angles = ['000']
         run_tag = 'dirty_nxy'
         kxlabel = r'$n_{xy}$'
+    elif args.dirty_mscat:
+        taus = ['1e0','1e1']
+        angles = ['000','090','180']
+        run_tag = 'dirty_mscat'
+        kxlabel = r'$m{scat}$'
+    elif args.dirty_maxiter:
+        taus = ['1e0','1e1']
+        angles = ['000','090','180']
+        run_tag = 'dirty_miter'
+        kxlabel = r'$m{iter}$'
     elif args.dirty_biasxi:
         taus = ['1e0','1e1']
         angles = ['000','090','180']
@@ -148,7 +165,6 @@ if __name__ == "__main__":
 
     tax = [ax[0,0],ax[0,1],ax[1,0],ax[1,1]]
     for k, cur_compname in enumerate(['total','dscat','demis','demisscat']):
-
         plot_indiv_comp(tax[k], taus, angles, dcompnames[cur_compname],
                         run_tag, kxlabel, plot_xlog=plot_xlog, compnum=compnum)
     fig.tight_layout()

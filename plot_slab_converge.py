@@ -43,8 +43,9 @@ def plot_converge_slice(ax, taus, waves, angle,
     min_val = min(mvals[1:nvals])
     max_val = max(mvals[1:nvals])
 
-    ax.plot([min_val,max_val],[1.0,1.0],'k--')
-    ax.plot([min_val,max_val],[5.0,5.0],'k-.')
+    #ax.plot([min_val,max_val],[1.0,1.0],'k--')
+    ax.plot([min_val,max_val],[10.0,10.0],'k:')
+    ax.set_xlim(min_val,max_val)
 
     if plot_xlog:
         ax.set_xscale('log')    
@@ -68,6 +69,12 @@ if __name__ == "__main__":
                         "(special DIRTY runs) [default=False]")
     parser.add_argument("--dirty_nxy", action="store_true",
                         help="number of xy bins in slab " + \
+                        "(special DIRTY runs) [default=False]")
+    parser.add_argument("--dirty_mscat", action="store_true",
+                        help="maximum number of scatterings " + \
+                        "(special DIRTY runs) [default=False]")
+    parser.add_argument("--dirty_maxiter", action="store_true",
+                        help="maximum number of self-heating interations " + \
                         "(special DIRTY runs) [default=False]")
     parser.add_argument("--dirty_biasxi", action="store_true",
                         help="number of xy bins in slab " + \
@@ -113,6 +120,16 @@ if __name__ == "__main__":
         waves = ['035.11','151.99']
         run_tag = 'dirty_nxy'
         kxlabel = r'$n_{xy}$'
+    elif args.dirty_mscat:
+        taus = ['1e0','1e1']
+        waves = ['000.15','000.53','035.11','151.99']
+        run_tag = 'dirty_mscat'
+        kxlabel = r'$m{scat}$'
+    elif args.dirty_maxiter:
+        taus = ['1e0','1e1']
+        waves = ['000.15','000.53','035.11','151.99']
+        run_tag = 'dirty_miter'
+        kxlabel = r'$m{iter}$'
     elif args.dirty_biasxi:
         taus = ['1e0','1e1']
         waves = ['000.15','000.53','035.11','151.99']
