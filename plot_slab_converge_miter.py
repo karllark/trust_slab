@@ -55,11 +55,10 @@ if __name__ == "__main__":
     pvals = ['0','1','2','4']
     n_files = len(cvals)
 
-    cut1 = np.array([95,115])
-
     waves = ['035.11','151.99']
 
     for j, wave in enumerate(waves):
+        cut1 = np.array([95,115])
         for i, cval in enumerate(cvals):
             tau = '1e1'
             angle = '090'

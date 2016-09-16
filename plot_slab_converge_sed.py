@@ -130,12 +130,12 @@ if __name__ == "__main__":
         taus = ['1e0','1e1']
         angles = ['000','090','180']
         run_tag = 'dirty_mscat'
-        kxlabel = r'$m{scat}$'
+        kxlabel = r'$m_\mathrm{scat}$'
     elif args.dirty_maxiter:
         taus = ['1e0','1e1']
         angles = ['000','090','180']
         run_tag = 'dirty_miter'
-        kxlabel = r'$m{iter}$'
+        kxlabel = r'$m_\mathrm{iter}$'
     elif args.dirty_biasxi:
         taus = ['1e0','1e1']
         angles = ['000','090','180']
