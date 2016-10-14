@@ -231,8 +231,8 @@ def plot_imagegrid(modnames, moddisplaynames, wave, tau, angle,
             #print(good_only[0:5])
             comp_y = good_only
             cut1_offset = np.average(comp_y)
-            cut1_stddev = np.average(abs(comp_y))
-            #cut1_stddev = np.median(abs(comp_y))
+            #cut1_stddev = np.average(abs(comp_y))
+            cut1_stddev = np.median(abs(comp_y))
             cut1_maxabsdev = np.amax(abs(comp_y))
             
         # second cut (x)
@@ -269,7 +269,7 @@ def plot_imagegrid(modnames, moddisplaynames, wave, tau, angle,
 
             # quantitative info to save
             cut2_offset = np.average(y)
-            cut2_stddev = np.average(abs(y))
+            cut2_stddev = np.median(abs(y))
             cut2_maxabsdev = np.amax(abs(y))
 
         tab.add_row([displaynames[i], i,

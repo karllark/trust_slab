@@ -13,11 +13,6 @@ import os.path
 import argparse
 
 import numpy as np
-import matplotlib.pyplot as pyplot
-import matplotlib.gridspec as gridspec
-from matplotlib.colors import LogNorm
-
-from astropy.io import fits
 
 from comp_slab_models_sed_decompose import plot_decompose_sed
 from comp_slab_models_image import plot_imagegrid

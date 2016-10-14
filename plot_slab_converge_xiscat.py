@@ -59,7 +59,7 @@ if __name__ == "__main__":
     # 3 wavelengths, 5 angles
     
     modname = 'dirty_newforcebiasxi'
-    xis = ['0.0','0.1','0.25','0.9','1.0']
+    xis = ['0.0','0.1','0.5','0.9','1.0']
     angles = ['000','090','180']
 
     custcmap = cubehelix.cmap(reverse = False, rot=1, start=0, 
