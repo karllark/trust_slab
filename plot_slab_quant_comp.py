@@ -53,7 +53,7 @@ def plot_indiv_comp(ax, tau, good_angles, tagstr, dispstr, compname, dcol):
     ax.set_title(r'$\tau_z =$ ' + tau + ' (' + dispstr + ', ' + compname + ')')
     ax.set_yscale('log')    
     ax.set_ylim(1e-3,1e4)
-    ax.set_ylabel(r'$\sigma$ [%]')
+    ax.set_ylabel(r'$\bar{\Delta}$ [%]')
     ax.set_xlabel(r'$\theta$')
 
     return modnames

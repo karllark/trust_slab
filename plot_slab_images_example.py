@@ -11,6 +11,7 @@ import argparse
 
 import numpy as np
 import matplotlib.pyplot as pyplot
+import matplotlib.gridspec as gridspec
 from matplotlib.colors import LogNorm
 import matplotlib
 
@@ -35,7 +36,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # setup for nice plots
-    fontsize = 18
+    fontsize = 20
 
     font = {'size'   : fontsize}
 
@@ -49,7 +50,16 @@ if __name__ == "__main__":
     matplotlib.rc('ytick.minor', width=2)
 
     # setup figure
-    fig, ax = pyplot.subplots(nrows=2,ncols=7,figsize=(15,5))
+    #fig, ax = pyplot.subplots(nrows=2,ncols=7,figsize=(15,5))
+
+    fig, ax = pyplot.subplots(figsize=(15,5))
+    gs = gridspec.GridSpec(2, 8, width_ratios=7*[1.0] + [0.25])
+
+    ax = []
+    for i in range(2):
+        for j in range(7):
+            ax.append(pyplot.subplot(gs[i,j]))
+
     # 3 wavelengths, 5 angles
     
     modname = 'skirt'
@@ -77,25 +87,31 @@ if __name__ == "__main__":
             #    timage = timage[19:520,90:510]
 
             # display images
-            cur_cax = ax[i,j].imshow(timage,
-                                     norm=LogNorm(vmin=minmax_y_vals[i,0],
-                                                  vmax=minmax_y_vals[i,1]),
-                                     origin='lower',
-                                     cmap=custcmap)
-            ax[i,j].get_xaxis().set_visible(False)
+            cax = ax[7*i+j]
+            cur_cax = cax.imshow(timage,
+                                 norm=LogNorm(vmin=minmax_y_vals[i,0],
+                                              vmax=minmax_y_vals[i,1]),
+                                 origin='lower',
+                                 cmap=custcmap)
+            cax.get_xaxis().set_visible(False)
             if i == 0:
-                ax[i,j].set_title(r'$\theta = ' + angles[j] + '^\circ$',
-                                  fontsize=fontsize)
+                cax.set_title(r'$\theta = ' + angles[j] + '^\circ$',
+                              fontsize=fontsize)
             if j == 0:
-                ax[i,j].set_ylabel(r'$\lambda = ' + wave + '$ $\mu m$')
-                ax[i,j].yaxis.set_ticklabels([])
-                ax[i,j].yaxis.set_ticks_position('none')
+                cax.set_ylabel(r'$\lambda = ' + wave + '$ $\mu m$')
+                cax.yaxis.set_ticklabels([])
+                cax.yaxis.set_ticks_position('none')
             else:
-                ax[i,j].get_yaxis().set_visible(False)
+                cax.get_yaxis().set_visible(False)
 
+        # colorbar
+        cbar = fig.colorbar(cur_cax, 
+                            cax=(pyplot.subplot(gs[i,7])))
+        cbar.ax.tick_params(labelsize=0.8*fontsize) 
+        cbar.set_label(label='MJy/sr',size=0.8*fontsize)
             
     # optimize the figure layout
-    pyplot.tight_layout()
+    pyplot.tight_layout(h_pad=0.0,w_pad=0.0)
 
     # display the plot
     save_name = modname+'_images_example'

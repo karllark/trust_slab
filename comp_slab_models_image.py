@@ -9,11 +9,13 @@
 #
 import os.path
 import argparse
+import math
 
 import numpy as np
 import matplotlib.pyplot as pyplot
 import matplotlib.gridspec as gridspec
 from matplotlib.colors import LogNorm
+from matplotlib import ticker
 
 import matplotlib as mpl
 
@@ -231,8 +233,8 @@ def plot_imagegrid(modnames, moddisplaynames, wave, tau, angle,
             #print(good_only[0:5])
             comp_y = good_only
             cut1_offset = np.average(comp_y)
-            #cut1_stddev = np.average(abs(comp_y))
-            cut1_stddev = np.median(abs(comp_y))
+            cut1_stddev = np.average(abs(comp_y))
+            #cut1_stddev = np.median(abs(comp_y))
             cut1_maxabsdev = np.amax(abs(comp_y))
             
         # second cut (x)
@@ -269,7 +271,8 @@ def plot_imagegrid(modnames, moddisplaynames, wave, tau, angle,
 
             # quantitative info to save
             cut2_offset = np.average(y)
-            cut2_stddev = np.median(abs(y))
+            cut2_stddev = np.average(abs(y))
+            #cut2_stddev = np.median(abs(y))
             cut2_maxabsdev = np.amax(abs(y))
 
         tab.add_row([displaynames[i], i,
@@ -298,6 +301,9 @@ def plot_imagegrid(modnames, moddisplaynames, wave, tau, angle,
     ax[n_files].set_ylabel('SB [MJy/sr]')
     ax[n_files].set_title('Y slice ($'+str(cut1[0])+' \leq x \leq '+
                           str(cut1[1])+ '$)')
+#    ax[n_files].set_xlim(95.,120.)
+#    ax[n_files].set_ylim(0.3,0.5)
+
     leg = ax[n_files].legend(loc=1,fontsize=fontsize)
     leg.get_frame().set_linewidth(2)
 
@@ -378,9 +384,16 @@ def plot_imagegrid(modnames, moddisplaynames, wave, tau, angle,
     fig.text (0.5, 0.99, fig_label, horizontalalignment='center',
               verticalalignment='top',fontsize=1.5*fontsize)
 
-    # colorbar
-    fig.colorbar(cur_cax, cax=(pyplot.subplot(gs[0:nrows,n_image_col+2])))
-    
+    # colorbar - force to have 4 ticks
+    log_yvals = np.log10(cut1_minmax_y_vals)
+    tick_vals = np.logspace(log_yvals[0],log_yvals[1],num=4)
+        
+    formatter = ticker.LogFormatter(10, labelOnlyBase=False) 
+    cb = fig.colorbar(cur_cax, 
+                      cax=(pyplot.subplot(gs[0:nrows,n_image_col+2])),
+                      ticks=tick_vals,
+                      format=formatter)
+
     # optimize the figure layout
     gs.tight_layout(fig, rect=[0, 0.03, 1, 0.96], h_pad=0.25)
 

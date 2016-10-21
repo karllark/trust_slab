@@ -120,7 +120,8 @@ if __name__ == "__main__":
     dispnames = ['CRT','DART-ray','DIRTY','Hyperion','SKIRT',
                        'TRADING','SOC']
     modnames = ['crt','dartr','dirty','hyper','skirt','tradi','SOC']
-    syms = ['b-','g--','r-','c-','p-','y--','k-']
+    syms = ['b-','g-','r-','c-','m-','y-','k-','b--','g--','r--','c--',
+               'm--','y--','k--']
 
     files = [modname + '/' + modname + 
              '_slab_eff_t1e1_i090a000_w035.11.fits'
@@ -131,7 +132,7 @@ if __name__ == "__main__":
         # read in the image
         timage = np.squeeze(fits.getdata(cfile))
 
-        if dispnames[i] in ['CRT','SOC']:
+        if dispnames[i] in ['CRT','SOC']:i
             timage = np.rot90(timage,3)
 
         if timage.shape[0] == 300:

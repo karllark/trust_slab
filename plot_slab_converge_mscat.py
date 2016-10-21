@@ -14,6 +14,7 @@ import matplotlib.pyplot as plt
 from matplotlib.colors import LogNorm
 import matplotlib.gridspec as gridspec
 import matplotlib
+#from matplotlib import ticker
 
 from astropy.io import fits
 
@@ -189,6 +190,8 @@ if __name__ == "__main__":
         ax[2,j].get_yaxis().set_ticks([])
 
         ax[2,j].set_yscale('log')
+        #formatter = ticker.LogFormatter(10, labelOnlyBase=False) 
+        #ax[2,j].yaxis.set_major_locator(yloc,format=formatter)
 
         if j == 0:
             ax[2,j].set_ylabel('SB [MJy/sr]')
@@ -208,6 +211,7 @@ if __name__ == "__main__":
     ax[0,0].set_title(r'$\lambda = 0.15$ $\mu m$')
     ax[0,1].set_title(r'$\lambda = 35.11$ $\mu m$')
     ax[0,2].set_title(r'$\lambda = 151.99$ $\mu m$')
+
 
     leg = ax[2,2].legend(loc='upper left',fontsize=fontsize*0.9, 
                          bbox_to_anchor=(0.02,1.6))

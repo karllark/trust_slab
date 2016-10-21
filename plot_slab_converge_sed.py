@@ -14,7 +14,8 @@ import matplotlib as mpl
 
 from astropy.table import Table
 
-def plot_indiv_comp(ax, taus, angles, compname, run_tag, kxlabel, plot_xlog=True,
+def plot_indiv_comp(ax, taus, angles, compname, run_tag, kxlabel, 
+                    plot_xlog=True,
                     fontsize=16, compnum='0',show_legend=True):
 
     col = ['r','b','g','c']
@@ -54,7 +55,7 @@ def plot_indiv_comp(ax, taus, angles, compname, run_tag, kxlabel, plot_xlog=True
         ax.set_xscale('log')    
     ax.set_yscale('log')    
     #ax.set_ylim(0.5e-1,1e2)
-    ax.set_ylabel(r'$\sigma$ [%]')
+    ax.set_ylabel(r'$\bar{\Delta}$ [%]')
     ax.set_xlabel(kxlabel)
     if compname == 'Direct Dust Emission' and show_legend:
         if plot_xlog:

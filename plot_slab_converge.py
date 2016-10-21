@@ -51,7 +51,7 @@ def plot_converge_slice(ax, taus, waves, angle,
         ax.set_xscale('log')    
     ax.set_yscale('log')    
     ax.set_ylim(0.5e-1,1e2)
-    ax.set_ylabel(r'$\sigma$ [%]')
+    ax.set_ylabel(r'$\bar{\Delta}$ [%]')
     ax.set_xlabel(kxlabel)
     #ax.legend(loc=3)
 

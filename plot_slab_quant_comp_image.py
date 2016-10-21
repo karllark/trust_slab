@@ -45,7 +45,7 @@ def plot_indiv_slice(ax, tau, waves, angles, run_tag, dispstr,
 
     ax.set_yscale('log')    
     ax.set_ylim(0.5e-1,1e4)
-    ax.set_ylabel(r'$\sigma$ [%]')
+    ax.set_ylabel(r'$\bar{\Delta}$ [%]')
     ax.set_xlabel(r'$\theta$')
 
     ax.set_title(r'$\tau_z =$ ' + tau + ' (' + dispstr + ', Y slice)')
@@ -114,9 +114,9 @@ def plot_slice_all_taus(args, good_angles, waves):
         labs = [r'$\lambda = '+waves[0]+'$',
                 r'$\lambda = '+waves[1]+'$']
 
-    leg2 = tax[0].legend(arts, labs,
+    leg2 = tax[1].legend(arts, labs,
                          fontsize=1.25*fontsize,
-                         loc='upper right')
+                         loc='upper left')
     leg2.get_frame().set_linewidth(2)
 
     #leg = tax[0].legend(loc=2, ncol=2)
@@ -172,7 +172,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # setup the plots
-    fontsize = 12
+    fontsize = 14
     font = {'size'   : fontsize}
 
     mpl.rc('font', **font)

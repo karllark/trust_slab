@@ -133,7 +133,7 @@ if __name__ == "__main__":
     # models to display
     plot_all = False 
     if args.dirty_nz:
-        nbinzs = ['2','5','10','20','50','100','200']
+        nbinzs = ['1','2','5','10','20','50','100','200']
         moddisplaynames = ['DI (Nz='+nbinz+')' for nbinz in reversed(nbinzs)]
         modnames = ['dirty_nbinz_'+nbinz for nbinz in reversed(nbinzs)]
         imodnames = ['dirty_nbinz/' + modname + '_slab_eff'
@@ -141,7 +141,7 @@ if __name__ == "__main__":
         scomp = 0
         save_str = 'dirty_nz'
     elif args.dirty_nxy:
-        nbinxys = ['5','10','20','50','100','200']
+        nbinxys = ['1','2','5','10','20','50','100','200']
         moddisplaynames = ['DI (Nxy='+nbinxy+')' 
                            for nbinxy in reversed(nbinxys)]
         modnames = ['dirty_nbinxy_'+nbinxy for nbinxy in reversed(nbinxys)]
