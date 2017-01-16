@@ -39,7 +39,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # setup for nice plots
-    fontsize = 16
+    fontsize = 20
 
     font = {'size'   : fontsize}
 
@@ -113,7 +113,7 @@ if __name__ == "__main__":
                          r'$\theta = 90^\circ$',
                          r'$\theta = 180^\circ$'],
                         fontsize=fontsize,
-                        loc='lower center')
+                        loc='lower right')
     leg2.get_frame().set_linewidth(2)
 
     #leg = ax[0].legend(fontsize=0.85*fontsize, loc='lower left',ncol=2)
@@ -168,7 +168,6 @@ if __name__ == "__main__":
                         ncol=2)
     leg2.get_frame().set_linewidth(2)
 
-
     plot_converge_slice(ax[3], ['1e0','1e1'], 
                         ['000.15','000.53','035.11','151.99'], '180',
                         'dirty_nphot', r'$N$', fontsize=fontsize)
@@ -178,8 +177,8 @@ if __name__ == "__main__":
 
     ax[3].yaxis.tick_right()
     ax[3].yaxis.set_label_position("right")
+    ax[3].yaxis.set_ticks_position('both')
     ax[3].set_title(r'Y Image Slice, $\theta = 180^\circ$')
-
 
     custcmap = cubehelix.cmap(reverse = False, rot=1, start=0, 
                               startHue=320, sat = 2)

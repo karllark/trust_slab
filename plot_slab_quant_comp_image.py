@@ -15,8 +15,8 @@ import matplotlib as mpl
 
 from astropy.table import Table
 
-def plot_indiv_slice(ax, tau, waves, angles, run_tag, dispstr,
-                     dcol, fontsize=16):
+def plot_indiv_slice(ax, tau, waves, angles, run_tag,
+                     dcol, fontsize=16, irwaves=False):
 
     sym = ['-','--','-.',':']
     for n, wave in enumerate(waves):
@@ -35,9 +35,22 @@ def plot_indiv_slice(ax, tau, waves, angles, run_tag, dispstr,
             
             pvals[:,k] = np.array(cur_table['cut1_stddev'])
 
+        not_used_models = ["DART-ray","TRADING"]
         for i, cmodel in enumerate(mvals):
-            ax.plot(angles, pvals[i,:], dcol[cmodel]+sym[n],
+            trans = 1.0
+            if (tau == '1e1') and irwaves:
+                if cmodel in not_used_models:
+                    trans = 0.25
+            ax.plot(angles, pvals[i,:], dcol[cmodel]+sym[n], alpha=trans,
                     label=cmodel + r' $\lambda = ' + wave + '$')
+
+        indxs = np.arange(len(mvals))
+        if (tau == '1e1') and irwaves:
+            for nmod in not_used_models:
+                nindxs, = np.where(mvals[indxs] != nmod)
+                indxs = indxs[nindxs]
+
+        print('Y slice: ', tau, wave, np.max(pvals[indxs,:]))
             
     #sones = np.full((len(angles)),1.0)
     #ax.plot(angles,sones,'k--')
@@ -48,31 +61,18 @@ def plot_indiv_slice(ax, tau, waves, angles, run_tag, dispstr,
     ax.set_ylabel(r'$\bar{\Delta}$ [%]')
     ax.set_xlabel(r'$\theta$')
 
-    ax.set_title(r'$\tau_z =$ ' + tau + ' (' + dispstr + ', Y slice)')
+    ax.set_title(r'$\tau_z =$ ' + tau + ' (Y slice)')
 
     return mvals
 
     #ax.legend(loc=3)
 
-def plot_slice_all_taus(args, good_angles, waves):
+def plot_slice_all_taus(args, good_angles, waves, ax, dispstr,
+                        fontsize=14, plegend=True, irwaves=False):
 
     # setup the plot
-    #fig, ax = plt.subplots(nrows=2,ncols=2,figsize=(15,8))
-    #taus = ['1e-2','1e-1','1e0','1e1']
-    #tax = [ax[0,0],ax[0,1],ax[1,0],ax[1,1]]
-
     taus = ['1e0','1e1']
-    fig, ax = plt.subplots(ncols=2,figsize=(15,6))
     tax = ax
-
-    dispstr = 'eff'
-    tagstr = ''
-    if args.equ:
-        dispstr = 'equ'
-        tagstr = '_equ'
-    elif args.sto:
-        dispstr = 'sto'
-        tagstr = '_sto'
 
     col = ['b','g','r','c','m','y','k']
     models = ['CRT','DART-ray','DIRTY','Hyperion','SKIRT',
@@ -81,24 +81,25 @@ def plot_slice_all_taus(args, good_angles, waves):
 
     for k, cur_ax in enumerate(tax):
         pmodels = plot_indiv_slice(cur_ax, taus[k], waves, good_angles, 
-                                   tagstr, dispstr, dcol)
+                                   dispstr,dcol, irwaves=irwaves)
         if k == 0:
             save_pmodels = pmodels
 
     # Create two custom legends (more compact)
 
     # models
-    arts = [plt.Line2D((0,1),(0,0), color=dcol[cmodel], linestyle='-') 
-            for cmodel in save_pmodels]
-    leg1 = tax[0].legend(arts,
-                         save_pmodels,
-                         fontsize=1.25*fontsize,
-                         loc='upper left',
-                         ncol=2)
-    leg1.get_frame().set_linewidth(2)
+    if plegend:
+        arts = [plt.Line2D((0,1),(0,0), color=dcol[cmodel], linestyle='-') 
+                for cmodel in save_pmodels]
+        leg1 = tax[0].legend(arts,
+                             save_pmodels,
+                             fontsize=1.25*fontsize,
+                             loc='upper left',
+                             ncol=2)
+        leg1.get_frame().set_linewidth(2)
 
     # Add the legend manually to the current Axes.
-    tax[0].add_artist(leg1)
+    #tax[0].add_artist(leg1)
 
     # waves
     if args.sto and not args.uvopt:
@@ -113,35 +114,20 @@ def plot_slice_all_taus(args, good_angles, waves):
                 plt.Line2D((0,1),(0,0), color='k', linestyle='--')]
         labs = [r'$\lambda = '+waves[0]+'$',
                 r'$\lambda = '+waves[1]+'$']
-
+        
     leg2 = tax[1].legend(arts, labs,
+                         title='Y Slice',
                          fontsize=1.25*fontsize,
-                         loc='upper left')
+                         loc='upper center', 
+                         bbox_to_anchor=(-0.05,0.97))
+    leg2.get_title().set_fontsize(fontsize*1.5)
     leg2.get_frame().set_linewidth(2)
 
-    #leg = tax[0].legend(loc=2, ncol=2)
-    #leg.get_frame().set_linewidth(2)
+    # make y axis nice
 
-    fig.tight_layout()
-
-    save_name = 'slab_qcomp_image_' + dispstr
-
-    if args.uvopt:
-        save_name += '_uvopt'
-    else:
-        save_name += '_ir'
-
-    if args.png:
-        fig.savefig(save_name+'.png')
-        fig.savefig(save_name+'_small.png',dpi=11)
-    elif args.eps:
-        fig.savefig(save_name+'.eps')
-    elif args.pdf:
-        fig.savefig(save_name+'.pdf')
-    else:
-        plt.show()
-
-    plt.close(fig)
+    tax[1].yaxis.tick_right()
+    tax[1].yaxis.set_ticks_position('both')
+    tax[1].yaxis.set_label_position("right")
 
 if __name__ == "__main__":
 
@@ -184,11 +170,44 @@ if __name__ == "__main__":
 
     if args.uvopt:
         waves = ['000.15','000.53']
+        irwaves = False
     else:
         if args.sto:
             waves = ['008.11','023.10','151.99']
         else:
             waves = ['035.11','151.99']
+        irwaves = True
 
+    dispstr = 'eff'
+    tagstr = ''
+    if args.equ:
+        dispstr = 'equ'
+        tagstr = '_equ'
+    elif args.sto:
+        dispstr = 'sto'
+        tagstr = '_sto'
 
-    plot_slice_all_taus(args, good_angles, waves)
+    fig, ax = plt.subplots(ncols=2,figsize=(15,6))
+
+    plot_slice_all_taus(args, good_angles, waves, ax, tagstr)
+
+    fig.tight_layout()
+
+    save_name = 'slab_qcomp_image_' + dispstr
+
+    if args.uvopt:
+        save_name += '_uvopt'
+    else:
+        save_name += '_ir'
+
+    if args.png:
+        fig.savefig(save_name+'.png')
+        fig.savefig(save_name+'_small.png',dpi=11)
+    elif args.eps:
+        fig.savefig(save_name+'.eps')
+    elif args.pdf:
+        fig.savefig(save_name+'.pdf')
+    else:
+        plt.show()
+
+    plt.close(fig)

@@ -67,6 +67,9 @@ if __name__ == "__main__":
                         help="maximum number of iterations for dust " + 
                         "emission/self-heating " + \
                         "(special DIRTY runs) [default=False]")
+    parser.add_argument("--dirty_waveres", action="store_true",
+                        help="wavelength resolution convergence " + \
+                        "(special DIRTY runs) [default=False]")
     parser.add_argument("--dirty_mscat", action="store_true",
                         help="max scat convergence " + \
                         "(special DIRTY runs) [default=False]")
@@ -182,6 +185,16 @@ if __name__ == "__main__":
                      for modname in modnames]
         scomp = 0
         save_str = 'dirty_mscat'
+    elif args.dirty_waveres:
+        waveress = ['1.25','2.5','5','10','20']
+        waveress = ['5','10','20']
+        moddisplaynames = ['DI (waveres=' + waveres + ')'
+                           for waveres in waveress]
+        modnames = ['dirty_waveres_' + waveres for waveres in waveress]
+        imodnames = ['dirty_waveres/' + modname + '_slab_eff'
+                     for modname in modnames]
+        scomp = len(waveress) - 1
+        save_str = 'dirty_waveres'
     elif args.skirt_wr:
         weightred = ['1e8','1e7','1e6','1e5','1e4','1e3']
         moddisplaynames = ['SK (wr='+wr+')' for wr in weightred]

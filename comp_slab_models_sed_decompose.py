@@ -19,6 +19,8 @@ import matplotlib.gridspec as gridspec
 
 import matplotlib as mpl
 
+from scipy.interpolate import interp1d
+
 from astropy.table import Table
 from astropy.stats import sigma_clip
 
@@ -104,13 +106,37 @@ def plot_decompose_sed(modnames, moddisplaynames, tau, angle,
             ave_sed_comps_npts = np.full((data.shape[0],data.shape[1]-1),0.0)
             n_comps = data.shape[1] - 1
             n_waves = data.shape[0]
+            waves = data[:,0]
+            log_waves = np.log10(waves)
 
         # change the total dust emission column to be just direct dust
         #   emission instead of total dust emission
         data[:,4] -= data[:,5]
     
         # save the decomposed SEDs
-        all_data[:,:,i] = data
+        if len(data[:,0]) != n_waves:
+            # assume that the reference wavelength is the coarsed
+            # and use nearest neighbor to find the 
+            all_data[:,0,i] = all_data[:,0,0]
+            cur_waves = data[0:,0]
+            for k in range(1, n_comps+1):
+                for j in range(n_waves):
+                    sindxs = np.argsort(np.absolute(waves[j] - cur_waves))
+                    #print(j, waves[j], cur_waves[sindxs[0]], 
+                    #      all_data[j,k,0], data[sindxs[0],k], k)
+                    all_data[j,k,i] = data[sindxs[0],k]
+
+            # interpolate to the 1st wavelength grid (reference)
+            #all_data[:,0,i] = all_data[:,0,0]
+            #for k in range(1, n_comps+1):
+            #    indxs, = np.where(data[:,k] > 0.0)
+            #    f = interp1d(np.log10(data[indxs,0]), np.log10(data[indxs,k]), 
+            #                 kind='cubic')
+            #    gindxs, = np.where(waves > min(data[indxs,0]))
+            #    all_data[gindxs,k,i] = np.power(10.,f(log_waves[gindxs]))
+
+        else:
+            all_data[:,:,i] = data
 
     # get the average by medianing the stack of results
     for k in range(n_comps):
