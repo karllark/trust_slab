@@ -1,0 +1,16 @@
+
+./comp_slab_models.py --dirty_nxy -m 100. --angle 000 --tau 1e0 --wave all --png
+./comp_slab_models.py --dirty_nxy -m 100. --angle 000 --tau 1e0 --wave all --png --image
+./comp_slab_models.py --dirty_nxy -m 100. --angle 000 --tau 1e1 --wave all --png
+./comp_slab_models.py --dirty_nxy -m 100. --angle 000 --tau 1e1 --wave all --png --image
+
+./plot_slab_converge.py --dirty_nxy --angle 000 --png
+
+./comp_slab_models.py --dirty_nxy -m 100. --angle 180 --tau 1e0 --wave all --png
+./comp_slab_models.py --dirty_nxy -m 100. --angle 180 --tau 1e0 --wave all --png --image
+./comp_slab_models.py --dirty_nxy -m 100. --angle 180 --tau 1e1 --wave all --png
+./comp_slab_models.py --dirty_nxy -m 100. --angle 180 --tau 1e1 --wave all --png --image
+
+./plot_slab_converge.py --dirty_nxy --angle 180 --png
+
+./plot_slab_converge_sed.py --dirty_nxy --png

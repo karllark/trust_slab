@@ -1,0 +1,21 @@
+
+./comp_slab_models.py -m 100. --angle all --tau all --wave all --image --png
+./comp_slab_models.py -m 100. --angle all --tau all --png
+
+./plot_slab_quant_comp.py --png
+./plot_slab_quant_comp_image.py --png
+./plot_slab_quant_comp_image.py --png --uvopt
+
+./comp_slab_models.py --equ -m 100. --angle all --tau all --wave all --image --png
+./comp_slab_models.py --equ -m 100. --angle all --tau all --png
+
+./plot_slab_quant_comp.py --equ --png
+./plot_slab_quant_comp_image.py --png --equ
+./plot_slab_quant_comp_image.py --png --equ --uvopt
+
+./comp_slab_models.py --sto -m 100. --angle all --tau all --wave all --image --png
+./comp_slab_models.py --sto -m 100. --angle all --tau all --png
+
+./plot_slab_quant_comp.py --sto --png
+./plot_slab_quant_comp_image.py --png --sto 
+./plot_slab_quant_comp_image.py --png --sto --uvopt

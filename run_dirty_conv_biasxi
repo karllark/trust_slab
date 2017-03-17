@@ -1,0 +1,20 @@
+
+./comp_slab_models.py --dirty_newforcebiasxi -m 100. --angle 090 --tau 1e0 --wave all --png
+./comp_slab_models.py --dirty_newforcebiasxi -m 100. --angle 090 --tau 1e0 --wave all --png --image
+./comp_slab_models.py --dirty_newforcebiasxi -m 100. --angle 000 --tau 1e0 --wave all --png
+./comp_slab_models.py --dirty_newforcebiasxi -m 100. --angle 000 --tau 1e0 --wave all --png --image
+./comp_slab_models.py --dirty_newforcebiasxi -m 100. --angle 180 --tau 1e0 --wave all --png
+./comp_slab_models.py --dirty_newforcebiasxi -m 100. --angle 180 --tau 1e0 --wave all --png --image
+
+./comp_slab_models.py --dirty_newforcebiasxi -m 100. --angle 090 --tau 1e1 --wave all --png
+./comp_slab_models.py --dirty_newforcebiasxi -m 100. --angle 090 --tau 1e1 --wave all --png --image
+./comp_slab_models.py --dirty_newforcebiasxi -m 100. --angle 000 --tau 1e1 --wave all --png
+./comp_slab_models.py --dirty_newforcebiasxi -m 100. --angle 000 --tau 1e1 --wave all --png --image
+./comp_slab_models.py --dirty_newforcebiasxi -m 100. --angle 180 --tau 1e1 --wave all --png
+./comp_slab_models.py --dirty_newforcebiasxi -m 100. --angle 180 --tau 1e1 --wave all --png --image
+
+./plot_slab_converge.py --dirty_biasxi --angle 000 --png
+./plot_slab_converge.py --dirty_biasxi --angle 090 --png
+./plot_slab_converge.py --dirty_biasxi --angle 180 --png
+
+./plot_slab_converge_sed.py --dirty_biasxi --png
