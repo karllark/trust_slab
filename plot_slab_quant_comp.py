@@ -35,7 +35,7 @@ def plot_indiv_comp(ax, tau, good_angles, tagstr, dispstr, compname,
             mod_std = np.zeros((n_angles,n_models))
             mod_maxdev = np.zeros((n_angles,n_models))
             vinit = True
-            
+
         mod_std[k,:] = cur_table['stddev'][indxs]
         mod_maxdev[k,:] = cur_table['maxabsdev'][indxs]
 
@@ -148,7 +148,7 @@ if __name__ == "__main__":
     dcompnames['dstel'] = 'Direct Stellar'
     dcompnames['dscat'] = 'Scattered Stellar'
     dcompnames['demis'] = 'Direct Dust Emission'
-    dcompnames['demisscat'] = 'Scattered Dust Emission'
+    dcompnames['demisscat'] = 'Scattered Dust Emiss'
     dcompnames['tstel'] = 'Transparent Stellar'
 
     dispstr = 'eff'
@@ -163,8 +163,12 @@ if __name__ == "__main__":
     for cur_compname in dcompnames.keys():
         fig, ax = plt.subplots(ncols=2,figsize=(15,6))
 
+        dustemis = False
+        if cur_compname == 'demis':
+            dustemis = True
+
         plot_full_comp(cur_compname, dcompnames, args, good_angles, 
-                       ax, tagstr, dispstr)
+                       ax, tagstr, dispstr, dustemis=dustemis)
 
         fig.tight_layout()
 
